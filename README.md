@@ -6,7 +6,6 @@ Description of the structure:
     - users: authenticates login/signup/guest login
     - energy:  manages energy readings, reports, predictions
     - devices: automation control (add/remove, toggle on/off), manages devices (add/remove, toggle on/off), ambience control (add/remove, toggle on/off)
-    - forecasting: uses Facebook Prophet for energy usage predictions
     - notifications: simulates notifications based on usage goals, community events, device requests
 
 
