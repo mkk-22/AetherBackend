@@ -7,3 +7,7 @@ from django.db import models
 #   - EnergyReport: ID, user ID, report date, usage stats (JSON), goal status (met/exceeded/missed)
 # AND register any custom models in the main projects 'settings.py'
 # AND register the models in the main projects 'admin.py'
+
+class EnergyGoal(models.Model):
+    name = models.CharField(max_length=100)
+   

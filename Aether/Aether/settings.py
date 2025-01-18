@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'users',
     'energy',
     'devices',
-    'notifications'
+    'notifs'
 ]
 
 MIDDLEWARE = [
@@ -56,10 +56,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Aether.urls'
 
+import os
+
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'sample_templates'),  # Make sure this is pointing to the correct directory
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,6 +77,11 @@ TEMPLATES = [
         },
     },
 ]
+
+import os
+print(os.path.join(BASE_DIR, 'templates'))
+
+
 
 WSGI_APPLICATION = 'Aether.wsgi.application'
 
@@ -126,3 +137,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

@@ -14,4 +14,9 @@ from django.db import models
 # AND register any custom models in the main projects 'settings.py'
 # AND register the models in the main projects 'admin.py'
 
-
+class House(models.Model):
+    name = models.CharField(max_length=100)
+    
+class Room(models.Model):
+    name = models.CharField(max_length=100)
+    

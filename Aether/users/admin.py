@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import HomeOwner, Guest
 
-# Register your models here.
+admin.site.register(HomeOwner)
+admin.site.register(Guest)
