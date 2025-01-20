@@ -1,28 +1,35 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from users.models import HomeOwner
-from energy.models import EnergyGoal
+from .models import Owner, User
+import random, string
 
-# 1. User Signup Form (Django's built-in form)
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)  # Ensures email is included in the form
+class OwnerSignupForm(forms.Form):
+    first_name = forms.CharField(max_length=100)
+    last_name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput())
+    confirm_password = forms.CharField(widget=forms.PasswordInput())
+    plan_type = forms.ChoiceField(choices=[('home', 'Home'), ('business', 'Business')])
 
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']  # Fields from the User model
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('This email is already in use!')
+        return email
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        if commit:
-            user.save()
-        return user
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
 
-# 2. Homeowner Signup Form (Custom form for Homeowner details)
-class HomeownerSignupForm(forms.ModelForm):
-    plan_type = forms.ChoiceField(choices=HomeOwner.PLAN_CHOICES, required=True)
-    energy_goal = forms.ModelChoiceField(queryset=EnergyGoal.objects.all(), required=True)
+        if password and confirm_password:
+            if password != confirm_password:
+                raise forms.ValidationError("Your passwords do not match!")
+        return cleaned_data
 
-    class Meta:
-        model = HomeOwner
-        fields = ['plan_type', 'energy_goal']  # Fields specific to Homeowner model
+class LoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput())
+
+class GuestLoginForm(forms.Form):
+    code = forms.CharField(max_length=10)  
+    name = forms.CharField(max_length=100)  

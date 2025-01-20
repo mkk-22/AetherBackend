@@ -38,10 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # the apps we created 
-    'users',
-    'energy',
-    'devices',
-    'notifs'
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -63,9 +60,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'sample_templates'),  # Make sure this is pointing to the correct directory
-        ],
+        'DIRS': [BASE_DIR / 'templates'],  # Add the project-wide templates directory here
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,6 +72,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 import os
 print(os.path.join(BASE_DIR, 'templates'))

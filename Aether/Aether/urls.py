@@ -20,8 +20,12 @@ from users import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.start_view, name='start_view'),
-    path('signup/', views.signup_view, name='signup'),
-    path('login/', views.login_view, name='login'),
-    path('guest_login/', views.guest_login_view, name='guest_login')
+    path('', views.start, name='start'),
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.ownerlogin, name='ownerlogin'),
+    path('guest_login/', views.guest_login, name='guest_login'),
+    path('home/', views.home, name='home'),
+    path('generate_guest_code/', views.generate_guest_code, name='generate_guest_code'),
+    path('guest_home/', views.guest_home, name='guest_home'),
+    path('logout/', views.logout_view, name='logout')
 ]
