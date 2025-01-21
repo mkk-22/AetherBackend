@@ -25,6 +25,7 @@ urlpatterns = [
     path('login/', views.ownerlogin, name='ownerlogin'),
     path('guest_login/', views.guest_login, name='guest_login'),
     path('home/', views.home, name='home'),
+    path('my_guests/', views.my_guests, name='my_guests'),
     path('generate_guest_code/', views.generate_guest_code, name='generate_guest_code'),
     path('guest_home/', views.guest_home, name='guest_home'),
     path('logout/', views.logout_view, name='logout')
