@@ -90,7 +90,6 @@ def guest_login(request):
 
     return render(request, 'guest_login.html', {'form': form})
 
-
 @login_required
 def home(request):
     return render(request, 'home.html')
