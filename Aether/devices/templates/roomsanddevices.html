@@ -1,61 +1,61 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms and Devices</title>
+</head>
+<body>
+    <h1>Rooms and Devices</h1>
 
-        <h1>Rooms and Devices</h1>
+   
+    <p><a href="{% url 'add_room' %}">Add a Room</a></p>
 
-        <!-- List Rooms -->
-        <h2>Rooms</h2>
+    <!-- List of Rooms -->
+    {% if rooms %}
+        <h2>Your Rooms</h2>
         <ul>
-            {% for room in house.rooms.all %}
+            {% for room in rooms %}
                 <li>
                     <strong>{{ room.name }}</strong>
-                    <ul>
-                        <!-- List Devices in Room -->
-                        {% for device in room.devices.all %}
-                            <li>
-                                <a href="{% url 'device_detail' device.device_id %}">{{ device.name }}</a>
-                                <button onclick="window.location.href='{% url 'device_toggle' device.device_id %}'">
-                                    {% if device.status == 'on' %}
-                                        Turn Off
-                                    {% else %}
-                                        Turn On
-                                    {% endif %}
-                                </button>
-                            </li>
-                        {% endfor %}
-                    </ul>
-
-                    <!-- Add/Remove Devices -->
-                    <form method="POST" action="{% url 'add_device' room.room_id %}">
-                        {% csrf_token %}
-                        <input type="text" name="device_id" placeholder="Device ID" required>
-                        <button type="submit">Add Device</button>
-                    </form>
-                    <form method="POST" action="{% url 'remove_room' room.room_id %}">
+                    <!-- Form to Remove Room -->
+                    <form action="{% url 'remove_room' room.room_id %}" method="post" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit">Remove Room</button>
                     </form>
+                    
+                    <!-- List of Devices in Room -->
+                    <ul>
+                        {% for device in room.devices.all %}
+                            <li>
+                                {{ device.name }} ({{ device.status }})
+                                <!-- Form to Toggle Device -->
+                                <form action="{% url 'toggle_device' device.device_id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit">
+                                        {% if device.status == 'on' %}Turn Off{% else %}Turn On{% endif %}
+                                    </button>
+                                </form>
+
+                                 <!-- Form to Remove Device -->
+                                 <form action="{% url 'remove_device' device.device_id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit">Remove Device</button>
+                                </form>
+                            </li>
+                        {% empty %}
+                            <li>No devices in this room.</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <!-- Form to Add Device -->
+                    <p><a href="{% url 'add_device' room.room_id %}">Add a Device</a></p>
                 </li>
             {% endfor %}
         </ul>
-
-        <!-- Add Room -->
-        <h3>Add New Room</h3>
-        <form method="POST" action="{% url 'add_room'%}">
-            {% csrf_token %}
-            <input type="text" name="room_name" placeholder="Room Name" required>
-            <button type="submit">Add Room</button>
-        </form>
-        
-        <script src="" async defer></script>
-    </body>
+    {% else %}
+        <p>No rooms available. Add a room to get started!</p>
+    {% endif %}
+    <p> <a href="{% url 'home' %}"> Back to Home</a> </p>
+</body>
 </html>

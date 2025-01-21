@@ -12,7 +12,7 @@ class House(models.Model):
 class Room(models.Model):
     house = models.ForeignKey('House', related_name='rooms', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    room_id = models.CharField(max_length=255, unique=True)
+    room_id = models.CharField(max_length=8, unique=True)
 
     def __str__(self):
         return f"{self.name} Room in House #{self.house.house_id}"
