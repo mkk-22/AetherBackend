@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from users import user_views
 from devices import device_views
+from energy import energy_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -41,5 +42,11 @@ urlpatterns = [
     path('remove_device/<int:device_id>/', device_views.remove_device, name='remove_device'),
     path('toggle_device/<int:device_id>/', device_views.toggle_device, name='toggle_device'),
     path('toggle_device/', device_views.toggle_device, name='toggle_device'),
-    path('see_device_details/', device_views.see_device_details, name='see_device_details')
+    path('see_device_details/', device_views.see_device_details, name='see_device_details'),
+    
+    path('energy_home/', energy_views.energy_home, name='energy_home'),
+    path('set_goal/', energy_views.set_goal, name='set_goal'),
+    path('remove_goal/', energy_views.remove_goal, name='remove_goal'),
+    path('usage_stats/', energy_views.usage_stats, name='usage_stats'),
+    path('join-event/<int:event_id>/', energy_views.join_event, name='join_event')
 ]

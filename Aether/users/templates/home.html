@@ -9,6 +9,7 @@
     <h1>Welcome, {{ request.user.first_name }}</h1>
 
     <p><a href="{% url 'roomsanddevices' %}">Go to Rooms and Devices</a></p>
+    <p><a href="{% url 'energy_home' %}">Energy Stats</a></p>
     <p> <a href="{% url 'my_guests' %}"> My Guests </a> </p>
     <p> <a href="{% url 'logout' %}"> Logout </a> </p>
 

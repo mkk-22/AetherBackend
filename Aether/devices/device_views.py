@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import House, Room, Device
 from users.user_views import generate_unique_code
-
+from django.utils.crypto import get_random_string
 
 
 def roomsanddevices(request):
@@ -9,12 +9,8 @@ def roomsanddevices(request):
     rooms = house.rooms.all()  
     return render(request, 'roomsanddevices.html', {'house': house, 'rooms': rooms})
 
-from django.utils.crypto import get_random_string
-
-# Function to generate a unique room_id
 def generate_unique_room_id():
-    return get_random_string(8)  # Generate an 8-character unique string
-
+    return get_random_string(8)  
 
 def add_room(request):
     if request.method == 'POST':
@@ -44,10 +40,6 @@ def add_room(request):
         return redirect('roomsanddevices')
 
     return render(request, 'add_room.html')
-
-
-
-
 
 def remove_room(request, room_id):
     room = get_object_or_404(Room, room_id=room_id)

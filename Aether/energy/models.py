@@ -8,7 +8,7 @@ class EnergyGoal(models.Model):
     goal = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.homeowner.username}'s Energy Goal: {self.goal} kWh"
+        return f"{self.homeowner.user.first_name}'s Energy Goal: {self.goal} kWh"
 
 class EnergyUsage(models.Model):
     homeowner = models.ForeignKey(Owner, on_delete=models.CASCADE, related_name='energy_usages')
@@ -17,15 +17,23 @@ class EnergyUsage(models.Model):
     period = models.CharField(max_length=10, choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly'), ('yearly', 'Yearly')])
 
     def __str__(self):
-        return f"{self.homeowner.username}'s {self.period.capitalize()} Energy Usage: {self.total_consumption} kWh"
-
+        return f"{self.homeowner.user.first_name}'s {self.period.capitalize()} Energy Usage: {self.total_consumption} kWh"
 
 class IntervalReading(models.Model):
     device_id = models.CharField(max_length=255)
-    homeowner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='interval_readings')
+    homeowner = models.ForeignKey(Owner, on_delete=models.CASCADE, related_name='interval_readings')
     start = models.DateTimeField()
     end = models.DateTimeField()
     usage = models.DecimalField(max_digits=10, decimal_places=2)  
 
     def __str__(self):
         return f"Reading for Device {self.device_id} from {self.start_time} to {self.end_time} - {self.usage} kWh"
+
+class CommunityEvent(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    date = models.DateField()
+    joined = models.BooleanField(default=False)  
+
+    def __str__(self):
+        return f"{self.name} - {'Joined' if self.joined else 'Not Joined'}"
