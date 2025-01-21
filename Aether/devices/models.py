@@ -5,10 +5,9 @@ from users.models import Owner
 class House(models.Model):
     owner = models.ForeignKey(Owner, related_name='houses', on_delete=models.CASCADE)
     house_id = models.CharField(max_length=255, unique=True)
-    address = models.CharField(max_length=255)
     
     def __str__(self):
-        return f"House #{self.house_id} owned by {self.owner.name}"
+        return f"House #{self.house_id} owned by {self.owner.user.first_name}"
 
 class Room(models.Model):
     house = models.ForeignKey('House', related_name='rooms', on_delete=models.CASCADE)

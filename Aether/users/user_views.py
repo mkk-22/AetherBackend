@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Owner, User, Guest
+from devices.models import House
 from .forms import LoginForm, OwnerSignupForm, GuestLoginForm
 
 def start(request):
@@ -24,12 +25,16 @@ def signup(request):
             house_code = generate_unique_code()
             while Owner.objects.filter(house_id=house_code).exists():
                 house_code = generate_unique_code()
+                    # Create House object linked to the Owner
             owner = Owner.objects.create(
                 user=user,
                 plan_type=form.cleaned_data['plan_type'],
                 house_id=house_code
             )
-
+            house = House.objects.create(
+                owner=owner,
+                house_id=house_code, 
+            )
             return redirect('ownerlogin') 
     else:
         form = OwnerSignupForm()

@@ -16,17 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from users import views
+from users import user_views
+from devices import device_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.start, name='start'),
-    path('signup/', views.signup, name='signup'),
-    path('login/', views.ownerlogin, name='ownerlogin'),
-    path('guest_login/', views.guest_login, name='guest_login'),
-    path('home/', views.home, name='home'),
-    path('my_guests/', views.my_guests, name='my_guests'),
-    path('generate_guest_code/', views.generate_guest_code, name='generate_guest_code'),
-    path('guest_home/', views.guest_home, name='guest_home'),
-    path('logout/', views.logout_view, name='logout')
+    path('', user_views.start, name='start'),
+    path('signup/', user_views.signup, name='signup'),
+    path('login/', user_views.ownerlogin, name='ownerlogin'),
+    path('guest_login/', user_views.guest_login, name='guest_login'),
+    path('home/', user_views.home, name='home'),
+    path('my_guests/', user_views.my_guests, name='my_guests'),
+    path('generate_guest_code/', user_views.generate_guest_code, name='generate_guest_code'),
+    path('guest_home/',user_views.guest_home, name='guest_home'),
+    path('logout/', user_views.logout_view, name='logout'),
+    
+    path('roomsanddevices/<str:house_id>/', device_views.roomsanddevices, name='roomsanddevices'),
+    path('roomsanddevices/', device_views.roomsanddevices, name='roomsanddevices'),
+    path('add_room/', device_views.add_room, name='add_room'),
+    path('remove_room/', device_views.remove_room, name='remove_room'),
+    path('add_device/', device_views.add_device, name='add_device'),
+    path('remove_device/', device_views.remove_device, name='remove_device'),
+    path('toggle_device/', device_views.toggle_device, name='toggle_device'),
+    path('see_device_details/', device_views.see_device_details, name='see_device_details')
 ]
