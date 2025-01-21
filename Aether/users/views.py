@@ -146,3 +146,5 @@ def guest_home(request):
 
 @login_required
 def logout_view(request):
+    logout(request)
+    return redirect('start')
