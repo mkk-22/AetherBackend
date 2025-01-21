@@ -8,20 +8,8 @@
 <body>
     <h1>Welcome, {{ request.user.first_name }}</h1>
 
-    {% if success %}
-        <p>{{ success }}</p>
-    {% endif %}
+    <p> <a href="{% url 'my_guests' %}"> My Guests </a> </p>
+    <p> <a href="{% url 'logout' %}"> Logout </a> </p>
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-
-    <a href="{% url 'generate_guest_code' %}">Generate Guest Code</a>
-
-    {% if code %}
-        <p>Generated Code: {{ code }}</p>
-    {% endif %}
-
-    <a href="{% url 'logout' %}">Logout</a>
 </body>
 </html>
