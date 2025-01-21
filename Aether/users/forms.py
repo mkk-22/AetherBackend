@@ -31,5 +31,8 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput())
 
 class GuestLoginForm(forms.Form):
+    house_id = forms.IntegerField()
     code = forms.CharField(max_length=10)  
-    name = forms.CharField(max_length=100)  
+    first_name = forms.CharField(max_length=100)  
+    last_name = forms.CharField(max_length=100) 
+    
