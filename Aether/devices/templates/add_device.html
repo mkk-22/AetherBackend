@@ -6,28 +6,12 @@
     <title>Add Device to Room</title>
 </head>
 <body>
-    <h2>Add Device to {{ room.name }} Room</h2>
+    <h2>Add Device to {{ room.name }} </h2>
     <form method="POST">
         {% csrf_token %}
-        <label for="device_id">Device ID:</label>
-        <input type="text" name="device_id" id="device_id" required><br>
-
-        <label for="name">Device Name:</label>
-        <input type="text" name="name" id="name" required><br>
 
         <label for="general_product_code">Product Code:</label>
         <input type="text" name="general_product_code" id="general_product_code" required><br>
-
-        <label for="average_energy_consumption_per_hour">Average Energy Consumption (per hour):</label>
-        <input type="number" name="average_energy_consumption_per_hour" id="average_energy_consumption_per_hour" step="0.01" required><br>
-
-        <label for="status">Status:</label>
-        <select name="status" id="status">
-            <option value="on">On</option>
-            <option value="off">Off</option>
-            <option value="idle">Idle</option>
-            <option value="error">Error</option>
-        </select><br>
 
         <button type="submit">Add Device</button>
     </form>

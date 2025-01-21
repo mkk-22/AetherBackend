@@ -13,11 +13,9 @@ class AddRoomForm(forms.ModelForm):
 class AddDeviceForm(forms.ModelForm):
     class Meta:
         model = Device
-        fields = ['name', 'general_product_code']
+        fields = ['general_product_code']
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Device Name'}),
-            'general_product_code': forms.TextInput(attrs={'placeholder': 'General Product Code'}),
-            'average_energy_consumption_per_hour': forms.NumberInput(attrs={'placeholder': 'Energy Consumption'}),
+            'general_product_code': forms.TextInput(attrs={'placeholder': 'General Product Code'})
         }
 
 

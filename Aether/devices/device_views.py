@@ -59,10 +59,10 @@ def add_device(request, room_id):
     room = get_object_or_404(Room, room_id=room_id)
     if request.method == 'POST':
         device_id = generate_unique_code()
-        name = request.POST['name']
+        name = "device"
         general_product_code = request.POST['general_product_code']
-        average_energy_consumption_per_hour = request.POST['average_energy_consumption_per_hour']
-        status = request.POST['status']
+        average_energy_consumption_per_hour = 10
+        status = "off"
 
         device = Device(
             device_id=device_id,
