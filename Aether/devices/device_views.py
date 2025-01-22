@@ -1,7 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import House, Room, Device
+from energy.models import IntervalReading
+from django.contrib.auth.decorators import login_required
 from users.user_views import generate_unique_code
 from django.utils.crypto import get_random_string
+from django.utils import timezone
 
 
 def roomsanddevices(request):
@@ -75,11 +78,51 @@ def remove_device(request, device_id):
     device.delete()
     return redirect('roomsanddevices')
 
+from django.utils.timezone import now
+
+@login_required
 def toggle_device(request, device_id):
     device = get_object_or_404(Device, device_id=device_id)
-    device.status = 'off' if device.status == 'on' else 'on'
+    
+    if device.status == 'off':  # Toggling the device ON
+        IntervalReading.objects.create(
+            device_id=device.device_id,
+            homeowner=request.user.owner,  
+            start=now()
+        )
+        device.status = 'on'  # Update the status to 'on'
+    else:  # Toggling the device OFF
+        interval = IntervalReading.objects.filter(
+            device_id=device.device_id,
+            end__isnull=True  
+        ).first()
+
+        if interval:  # Ensure there's an open interval
+            interval.end = now()
+            interval.usage = calculate_usage(interval)
+            interval.save()
+        device.status = 'off'  # Update the status to 'off'
+
     device.save()
     return redirect('roomsanddevices')
+
+
+from decimal import Decimal
+from django.utils.timezone import timedelta
+
+def calculate_usage(interval):
+    # Convert the difference between start and end to hours
+    duration_in_hours = (interval.end - interval.start).total_seconds() / 3600
+
+    device = Device.objects.get(device_id=interval.device_id)
+    
+    # Ensure device.average_energy_per_hour is Decimal
+    average_consumption = Decimal(device.average_energy_consumption_per_hour)
+
+    # Calculate usage as a Decimal
+    usage = Decimal(duration_in_hours) * average_consumption
+    return usage
+
 
 def see_device_details(request, device_id):
     device = get_object_or_404(Device, device_id=device_id)

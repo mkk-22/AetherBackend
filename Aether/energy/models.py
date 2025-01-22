@@ -23,11 +23,11 @@ class IntervalReading(models.Model):
     device_id = models.CharField(max_length=255)
     homeowner = models.ForeignKey(Owner, on_delete=models.CASCADE, related_name='interval_readings')
     start = models.DateTimeField()
-    end = models.DateTimeField()
-    usage = models.DecimalField(max_digits=10, decimal_places=2)  
+    end = models.DateTimeField(null=True, blank=True)
+    usage = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  
 
     def __str__(self):
-        return f"Reading for Device {self.device_id} from {self.start_time} to {self.end_time} - {self.usage} kWh"
+        return f"Reading for Device {self.device_id} from {self.start} to {self.end} - {self.usage} kWh"
 
 class CommunityEvent(models.Model):
     name = models.CharField(max_length=255)
