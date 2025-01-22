@@ -139,7 +139,7 @@ def generate_guest_code(request):
     )
 
     print(str(owner.house_id))
-    return render(request, 'my_guests.html', {'success': f'Guest code {code} generated successfully!', 'code': code})
+    return render(request, 'my_guests.html', {'success': f'Guest code {code} generated successfully!', 'code': code, 'house':owner.house_id})
 
 def generate_unique_code():
     return random.randint(10000000, 99999999)

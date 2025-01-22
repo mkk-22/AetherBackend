@@ -7,7 +7,6 @@
 </head>
 <body>
     <h1>Rooms and Devices</h1>
-
    
     <p><a href="{% url 'add_room' %}">Add a Room</a></p>
 
@@ -28,7 +27,7 @@
                     <ul>
                         {% for device in room.devices.all %}
                             <li>
-                                {{ device.name }} ({{ device.status }})
+                                {{ device.name }} #{{ device.device_number}} ({{ device.status }}) 
                                 <!-- Form to Toggle Device -->
                                 <form action="{% url 'toggle_device' device.device_id %}" method="post" style="display:inline;">
                                     {% csrf_token %}
@@ -37,17 +36,20 @@
                                     </button>
                                 </form>
 
-                                 <!-- Form to Remove Device -->
-                                 <form action="{% url 'remove_device' device.device_id %}" method="post" style="display:inline;">
+                                <!-- Form to Remove Device -->
+                                <form action="{% url 'remove_device' device.device_id %}" method="post" style="display:inline;">
                                     {% csrf_token %}
                                     <button type="submit">Remove Device</button>
                                 </form>
+
+                                <!-- Button to View Device Info -->
+                                <a href="{% url 'device_info' device.device_id %}">View Info</a>
                             </li>
                         {% empty %}
                             <li>No devices in this room.</li>
                         {% endfor %}
                     </ul>
-                    
+
                     <!-- Form to Add Device -->
                     <p><a href="{% url 'add_device' room.room_id %}">Add a Device</a></p>
                 </li>

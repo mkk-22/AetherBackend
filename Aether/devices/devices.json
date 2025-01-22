@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Smart TV",
+        "general_product_code": "L0001",
+        "average_energy_consumption_per_hour": 100.50,
+        "manufacturer": "TechVision"
+    },
+    {
+        "name": "Motion Sensors",
+        "general_product_code": "M0001",
+        "average_energy_consumption_per_hour": 5.00,
+        "manufacturer": "SecureHome"
+    },
+    {
+        "name": "Chromotherapy Lights",
+        "general_product_code": "M0002",
+        "average_energy_consumption_per_hour": 12.00,
+        "manufacturer": "GlowTech"
+    },
+    {
+        "name": "Smart Fridge",
+        "general_product_code": "K0001",
+        "average_energy_consumption_per_hour": 150.75,
+        "manufacturer": "CoolMaster"
+    },
+    {
+        "name": "Smart Washing Machine",
+        "general_product_code": "L0001",
+        "average_energy_consumption_per_hour": 500.00,
+        "manufacturer": "LaundryPro"
+    }
+]
