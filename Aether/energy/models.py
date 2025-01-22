@@ -37,3 +37,4 @@ class CommunityEvent(models.Model):
 
     def __str__(self):
         return f"{self.name} - {'Joined' if self.joined else 'Not Joined'}"
+

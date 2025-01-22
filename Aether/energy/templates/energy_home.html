@@ -31,24 +31,26 @@
 
     <!-- Community Events -->
     <section>
-        <h2>Community Events</h2>
-        {% if events %}
+      <h2>Community Events</h2>
+      {% if events %}
           {% for event in events %}
-            <div>
-              <h3>{{ event.name }}</h3>
-              <p>{{ event.description }}</p>
-              <p>Date: {{ event.date }}</p>
-              {% if event.joined %}
-                <p>Status: Joined</p>
-              {% else %}
-                <a href="{% url 'join_event' event.id %}">Join Event</a>
-              {% endif %}
-            </div>
+              <div>
+                  <h3>{{ event.name }}</h3>
+                  <p>{{ event.description }}</p>
+                  <p>Date: {{ event.date }}</p>
+                  {% if event.joined %}
+                      <p>Status: Joined</p>
+                      <a href="{% url 'leave_event' event.id %}">Leave Event</a>
+                  {% else %}
+                      <a href="{% url 'join_event' event.id %}">Join Event</a>
+                  {% endif %}
+              </div>
           {% endfor %}
-        {% else %}
+      {% else %}
           <p>No community events available at the moment.</p>
-        {% endif %}        
-    </section>
+      {% endif %}        
+  </section>
+  
 
     <!-- Share Stats -->
     <section>

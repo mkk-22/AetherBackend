@@ -44,9 +44,21 @@ def usage_stats(request):
     usage = EnergyUsage.objects.filter(homeowner=request.user.owner).order_by('-creation_timestamp')
     return render(request, 'usage_stats.html', {'usage': usage})
 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import CommunityEvent
+
 @login_required
 def join_event(request, event_id):
     event = get_object_or_404(CommunityEvent, id=event_id)
     event.joined = True
     event.save()
-    return redirect('energy_home')  
+    return redirect('energy_home')
+
+@login_required
+def leave_event(request, event_id):
+    event = get_object_or_404(CommunityEvent, id=event_id)
+    event.joined = False
+    event.save()
+    return redirect('energy_home')
+

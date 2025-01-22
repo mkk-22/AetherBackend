@@ -48,5 +48,6 @@ urlpatterns = [
     path('set_goal/', energy_views.set_goal, name='set_goal'),
     path('remove_goal/', energy_views.remove_goal, name='remove_goal'),
     path('usage_stats/', energy_views.usage_stats, name='usage_stats'),
-    path('join-event/<int:event_id>/', energy_views.join_event, name='join_event')
+    path('join_event/<int:event_id>/', energy_views.join_event, name='join_event'),
+    path('leave_event/<int:event_id>/', energy_views.leave_event, name='leave_event')
 ]
