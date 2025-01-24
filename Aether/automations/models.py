@@ -1,5 +1,5 @@
 from django.db import models
-from devices.models import Device, Room
+from devices.models import Device
 
 class Automation(models.Model):
     TRIGGER_TYPES = [
@@ -10,10 +10,10 @@ class Automation(models.Model):
 
     name = models.CharField(max_length=255)
     trigger_type = models.CharField(max_length=50, choices=TRIGGER_TYPES)
-    trigger_value = models.CharField(max_length=100) 
-    room = models.ForeignKey(Room, related_name='automations', on_delete=models.CASCADE)
+    trigger_value = models.CharField(max_length=100)
     devices = models.ManyToManyField(Device, related_name='automations')
 
     def __str__(self):
         return f"Automation: {self.name} ({self.trigger_type}: {self.trigger_value})"
+
 

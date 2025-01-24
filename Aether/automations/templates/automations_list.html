@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Automations</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <h1>All Automations</h1>
+
+        <ul>
+            {% for automation in automations %}
+                <li>
+                    <strong>{{ automation.name }}</strong> 
+                    ({{ automation.trigger_type }}: {{ automation.trigger_value }})
+                    <form action="{% url 'delete_automation' automation.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                    <a href="{% url 'edit_automation' automation.id %}">Edit</a>
+                </li>
+            {% empty %}
+                <li>No automations available.</li>
+            {% endfor %}
+        </ul>
+
+        <p><a href="{% url 'add_automation' %}">Add Automation</a></p>
+        <p><a href="{% url 'roomsanddevices' %}">Back to Rooms and Devices</a></p>
+    </body>
+</html>

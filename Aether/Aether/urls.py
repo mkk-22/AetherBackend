@@ -20,6 +20,7 @@ from users import user_views
 from devices import device_views
 from energy import energy_views
 from ambiance import ambiance_views
+from automations import automation_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -55,6 +56,16 @@ urlpatterns = [
     path('ambiance_modes/<str:room_id>/', ambiance_views.ambiance_modes, name='ambiance_modes'),
     path('add_ambiance_mode/<str:room_id>/', ambiance_views.add_ambiance_mode, name='add_ambiance_mode'),
     path('edit_ambiance_mode/<int:mode_id>/', ambiance_views.edit_ambiance_mode, name='edit_ambiance_mode'),
-    path('delete_ambiance_mode/<int:mode_id>/', ambiance_views.delete_ambiance_mode, name='delete_ambiance_mode')
-
+    path('delete_ambiance_mode/<int:mode_id>/', ambiance_views.delete_ambiance_mode, name='delete_ambiance_mode'),
+    
+    path('automations/<str:room_id>/', automation_views.automations_list, name='automations_list'),
+    path('add_automation/<str:room_id>/', automation_views.add_automation, name='add_automation'),
+    path('edit_automation/<int:automation_id>/', automation_views.edit_automation, name='edit_automation'),
+    path('delete_automation/<int:automation_id>/', automation_views.delete_automation, name='delete_automation'),
+    
+    path('automations_list/', automation_views.automations_list, name='automations_list'),
+    path('add_automation/', automation_views.add_automation, name='add_automation'),
+    path('edit_automation/<int:automation_id>/', automation_views.edit_automation, name='edit_automation'),
+    path('delete_automation/<int:automation_id>/', automation_views.delete_automation, name='delete_automation')
+    
 ]

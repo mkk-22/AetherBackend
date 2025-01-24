@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Edit Automation</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <h1>Edit Automation</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="name">Automation Name:</label>
+            <input type="text" name="name" value="{{ automation.name }}" required>
+        
+            <label for="trigger_type">Trigger Type:</label>
+            <select name="trigger_type" required>
+                <option value="time" {% if automation.trigger_type == 'time' %}selected{% endif %}>Time</option>
+                <option value="temperature" {% if automation.trigger_type == 'temperature' %}selected{% endif %}>Temperature</option>
+                <option value="humidity" {% if automation.trigger_type == 'humidity' %}selected{% endif %}>Humidity</option>
+            </select>
+        
+            <label for="trigger_value">Trigger Value:</label>
+            <input type="text" name="trigger_value" value="{{ automation.trigger_value }}" required>
+        
+            <label for="devices">Select Devices:</label><br>
+            {% for device in devices %}
+                <input type="checkbox" name="devices" value="{{ device.device_id }}" 
+                       {% if device in automation.devices.all %}checked{% endif %}> 
+                {{ device.name }}<br>
+            {% endfor %}
+        
+            <button type="submit">Save Automation</button>
+        </form>
+        
+        <p><a href="{% url 'automations_list' %}">Back to Automations</a></p>
+    </body>
+</html>
