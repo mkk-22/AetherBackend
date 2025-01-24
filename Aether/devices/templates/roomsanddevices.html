@@ -52,12 +52,17 @@
 
                     <!-- Form to Add Device -->
                     <p><a href="{% url 'add_device' room.room_id %}">Add a Device</a></p>
+
+                    <p><a href="{% url 'ambiance_modes' room_id=room.room_id %}">Ambiance Modes</a></p>
                 </li>
             {% endfor %}
         </ul>
+
     {% else %}
         <p>No rooms available. Add a room to get started!</p>
     {% endif %}
+
+
     <p> <a href="{% url 'home' %}"> Back to Home</a> </p>
 </body>
 </html>

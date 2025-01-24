@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     # the apps we created 
     'users',
     'devices',
-    'energy'
+    'energy',
+    'ambiance'
 ]
 
 MIDDLEWARE = [

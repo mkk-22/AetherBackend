@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Ambiance Mode</title>
+</head>
+<body>
+    <h1>Add Ambiance Mode for {{ room.name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Mode Name:</label>
+        <input type="text" name="name" required><br>
+        <button type="submit">Add Mode</button>
+    </form>
+    <a href="{% url 'roomsanddevices' %}">Back to Room</a>
+</body>
+</html>

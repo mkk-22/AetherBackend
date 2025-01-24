@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambiance Modes</title>
+</head>
+<body>
+    <h1>Ambiance Modes for {{ room.name }}</h1>
+    <ul>
+        {% for mode in modes %}
+            <li>
+                <strong>{{ mode.name }}</strong>
+                <a href="{% url 'edit_ambiance_mode' mode_id=mode.id %}">Edit Mode</a>
+                <a href="{% url 'delete_ambiance_mode' mode_id=mode.id %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'add_ambiance_mode' room_id=room.room_id %}">Add Ambiance Mode</a><br>
+    <a href="{% url 'roomsanddevices' %}">Back to Room</a>
+</body>
+</html>

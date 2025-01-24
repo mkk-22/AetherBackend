@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Ambiance Mode</title>
+</head>
+<body>
+    <h1>Edit {{ mode.name }} Mode</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% for device in devices %}
+            <h3>{{ device.name }}</h3>
+            <label for="status_{{ device.device_id }}">Status:</label>
+            <select name="status_{{ device.device_id }}">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+            </select><br>
+
+            <label for="light_color_{{ device.device_id }}">Light Color:</label>
+            <input type="text" name="light_color_{{ device.device_id }}"><br>
+
+            <label for="volume_{{ device.device_id }}">Volume:</label>
+            <input type="number" name="volume_{{ device.device_id }}"><br>
+
+            <label for="temperature_{{ device.device_id }}">Temperature:</label>
+            <input type="number" name="temperature_{{ device.device_id }}"><br>
+            <hr>
+        {% endfor %}
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="{% url 'roomsanddevices' %}">Back to Room</a>
+</body>
+</html>

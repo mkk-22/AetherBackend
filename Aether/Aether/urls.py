@@ -19,6 +19,7 @@ from django.urls import path
 from users import user_views
 from devices import device_views
 from energy import energy_views
+from ambiance import ambiance_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -49,5 +50,11 @@ urlpatterns = [
     path('remove_goal/', energy_views.remove_goal, name='remove_goal'),
     path('usage_stats/', energy_views.usage_stats, name='usage_stats'),
     path('join_event/<int:event_id>/', energy_views.join_event, name='join_event'),
-    path('leave_event/<int:event_id>/', energy_views.leave_event, name='leave_event')
+    path('leave_event/<int:event_id>/', energy_views.leave_event, name='leave_event'),
+    
+    path('ambiance_modes/<str:room_id>/', ambiance_views.ambiance_modes, name='ambiance_modes'),
+    path('add_ambiance_mode/<str:room_id>/', ambiance_views.add_ambiance_mode, name='add_ambiance_mode'),
+    path('edit_ambiance_mode/<int:mode_id>/', ambiance_views.edit_ambiance_mode, name='edit_ambiance_mode'),
+    path('delete_ambiance_mode/<int:mode_id>/', ambiance_views.delete_ambiance_mode, name='delete_ambiance_mode')
+
 ]
