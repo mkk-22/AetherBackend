@@ -11,6 +11,26 @@
     </head>
     <body>
     
+        <h1> Current Guests </h1>
+        <ul>
+            {% for guest in guests %}
+                <li>
+                    {{ guest.user.first_name }} {{ guest.user.last_name }} 
+                    (Code: {{ guest.code }})
+                    
+                    <!-- Form to Remove Guest -->
+                    <form action="{% url 'my_guests' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="guest_id" value="{{ guest.id }}">
+                        <button type="submit">Remove Guest</button>
+                    </form>
+                </li>
+            {% empty %}
+                <li>No guests currently added.</li>
+            {% endfor %}
+        </ul>
+        
+        
         <a href="{% url 'generate_guest_code' %}">Generate Guest Code</a>
 
         {% if success %}

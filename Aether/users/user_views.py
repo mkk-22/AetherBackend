@@ -35,10 +35,21 @@ def signup(request):
                 owner=owner,
                 house_id=house_code, 
             )
-            return redirect('ownerlogin') 
+            owner.save()
+            house.save()
+            login(request, user)
+            return redirect('tutorial') 
     else:
         form = OwnerSignupForm()
     return render(request, 'signup.html', {'form': form})
+
+@login_required
+def tutorial(request):
+    return render(request, 'tutorial.html')
+
+@login_required
+def guest_tutorial(request):
+    return render(request, 'guest_tutorial.html')
 
 def ownerlogin(request):
     if request.method == 'POST':
@@ -66,7 +77,6 @@ def guest_login(request):
             last_name = form.cleaned_data['last_name']
 
             try:
-                # Retrieve the guest by both code and house_id
                 guest = Guest.objects.get(code=code, house_id=form.cleaned_data['house_id'])
 
                 # If the guest hasn't set a first name yet (still using "Guest" or None), update it
@@ -81,7 +91,7 @@ def guest_login(request):
 
                     if user is not None:
                         login(request, user)
-                        return redirect('guest_home')  # Successfully logged in, redirect to guest_home
+                        return redirect('guest_tutorial')  # Successfully logged in, redirect to guest_home
                     else:
                         form.add_error('code', 'Authentication failed. Please check your code or credentials.')
                 else:
@@ -101,7 +111,18 @@ def home(request):
     
 @login_required
 def my_guests(request):
-    return render(request, 'my_guests.html')
+    # Get the logged-in user's owner profile
+    owner = request.user.owner
+    # Fetch all guests linked to this owner
+    guests = Guest.objects.filter(owner=owner).exclude(user__first_name="Guest")
+
+    if request.method == 'POST':
+        # Handle guest removal
+        guest_id = request.POST.get('guest_id')
+        Guest.objects.filter(id=guest_id, owner=owner).delete()
+        return redirect('my_guests')
+
+    return render(request, 'my_guests.html', {'guests': guests})
 
 @login_required
 def generate_guest_code(request):
@@ -122,9 +143,12 @@ def generate_guest_code(request):
     code = generate_unique_code()
     while Guest.objects.filter(code=code).exists():
         code = generate_unique_code()
+    u_code = generate_unique_code()
+    while User.objects.filter(username=u_code).exists():
+        u_code = generate_unique_code()
 
     guest_user = User.objects.create_user(
-        username=str(code), 
+        username= generate_unique_code(), 
         email="none", 
         password=str(code),  
         first_name="Guest",  
@@ -137,9 +161,10 @@ def generate_guest_code(request):
         code=code,
         house_id=owner.house_id 
     )
-
+    
+    guests = Guest.objects.filter(owner=owner).exclude(user__first_name="Guest")
     print(str(owner.house_id))
-    return render(request, 'my_guests.html', {'success': f'Guest code {code} generated successfully!', 'code': code, 'house':owner.house_id})
+    return render(request, 'my_guests.html', {'success': f'Guest code {code} generated successfully!', 'code': code, 'house':owner.house_id, 'guests': guests})
 
 def generate_unique_code():
     return random.randint(10000000, 99999999)
@@ -149,6 +174,23 @@ def guest_home(request):
     return render(request, 'guest_home.html')
 
 @login_required
+def settings(request):
+    return render(request, 'settings.html')
+
+@login_required
 def logout_view(request):
+    logout(request)
+    return redirect('start')
+
+@login_required
+def guest_logout_view(request):
+    try:
+        guest = Guest.objects.get(user=request.user)
+        guest_user = request.user
+        guest.delete()
+        guest_user.delete()
+    except Guest.DoesNotExist:
+        pass  
+    
     logout(request)
     return redirect('start')

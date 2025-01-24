@@ -6,11 +6,8 @@
     <title>Home</title>
 </head>
 <body>
-    <h1>Welcome, {{ request.user.first_name }}</h1>
+    <h1> Tutorial page </h1>
+    <p><a href="{% url 'home' %}">Go to Home</a></p>
 
-    
-
-    <a href="{% url 'guest_logout_view' %}">Logout</a>
-    
 </body>
 </html>

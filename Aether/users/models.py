@@ -9,7 +9,7 @@ class Owner(models.Model):
 class Guest(models.Model):
     owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    code = models.CharField(max_length=20, unique=True)
+    code = models.CharField(max_length=20)
     house_id = models.BigIntegerField(default=0)
     
     def __str__(self):
