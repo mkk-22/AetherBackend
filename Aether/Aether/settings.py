@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'users',
     'devices',
     'energy',
-    'ambiance'
+    'ambiance',
+    'automations'
 ]
 
 MIDDLEWARE = [

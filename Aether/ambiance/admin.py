@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import AmbianceMode, AmbianceModeDevice
 
-# Register your models here.
+admin.site.register(AmbianceMode)
+admin.site.register(AmbianceModeDevice)
