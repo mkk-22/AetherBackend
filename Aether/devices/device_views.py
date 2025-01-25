@@ -65,6 +65,8 @@ def add_room(request):
             return render(request, 'add_room.html', {'error': 'Room name is required.'})
 
         room_id = generate_unique_room_id()
+        while request.user.house.rooms.filter(room_id=room_id).exists():
+               room_id = generate_unique_code()
 
         # Create the new room
         room = Room.objects.create(name=room_name, house=house, room_id=room_id)
@@ -109,6 +111,8 @@ def add_device(request, room_id):
 
         # Generate unique device_id
         device_id = generate_unique_code()
+        while request.user.house.rooms.devices.filter(device_id=device_id).exists():
+               device_id = generate_unique_code()
 
         # Find the last device with the same general_product_code in the room
         last_device = room.devices.filter(general_product_code=general_product_code).order_by('-device_number').first()

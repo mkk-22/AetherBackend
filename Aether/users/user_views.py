@@ -22,10 +22,11 @@ def signup(request):
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name']
             )
+            
             house_code = generate_unique_code()
             while Owner.objects.filter(house_id=house_code).exists():
                 house_code = generate_unique_code()
-                    # Create House object linked to the Owner
+
             owner = Owner.objects.create(
                 user=user,
                 plan_type=form.cleaned_data['plan_type'],
@@ -194,3 +195,16 @@ def guest_logout_view(request):
     
     logout(request)
     return redirect('start')
+
+def password_reset_view(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        user = User.objects.filter(email=email).first()
+        
+        if user:
+            return render(request, "password_reset.html", {"reset_sent": True})
+
+        else:
+            return render(request, "password_reset.html", {"error": "Email not found."})
+    
+    return render(request, "password_reset.html")

@@ -22,6 +22,7 @@ from energy import energy_views
 from ambiance import ambiance_views
 from automations import automation_views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', user_views.start, name='start'),
@@ -37,6 +38,7 @@ urlpatterns = [
     path('settings/',user_views.settings, name='settings'),
     path('logout/', user_views.logout_view, name='logout'),
     path('guest_logout_view/', user_views.guest_logout_view, name='guest_logout_view'),
+    path("password_reset_view/", user_views.password_reset_view, name="password_reset_view"),
     
     path('roomsanddevices/<str:house_id>/', device_views.roomsanddevices, name='roomsanddevices'),
     path('roomsanddevices/', device_views.roomsanddevices, name='roomsanddevices'),
