@@ -129,43 +129,54 @@ def my_guests(request):
 def generate_guest_code(request):
     owner = Owner.objects.get(user=request.user)
 
-    print("FAIL")
+    # Check guest limit
     current_guest_count = Guest.objects.filter(owner=owner).count()
-    print(str(current_guest_count))
     if owner.plan_type == 'home':
         guest_limit = 10
     else:
         guest_limit = 75
-    print(str(guest_limit))
     if current_guest_count >= guest_limit:
-        print("No")
         return render(request, 'my_guests.html', {'error': f'You have reached the guest limit of {guest_limit} guests.'})
 
-    code = generate_unique_code()
-    while Guest.objects.filter(code=code).exists():
+    if request.method == 'POST':
+        # Generate guest code
         code = generate_unique_code()
-    u_code = generate_unique_code()
-    while User.objects.filter(username=u_code).exists():
+        while Guest.objects.filter(code=code).exists():
+            code = generate_unique_code()
         u_code = generate_unique_code()
+        while User.objects.filter(username=u_code).exists():
+            u_code = generate_unique_code()
 
-    guest_user = User.objects.create_user(
-        username= generate_unique_code(), 
-        email="none", 
-        password=str(code),  
-        first_name="Guest",  
-        last_name="User" 
-    )
+        # Create guest user
+        guest_user = User.objects.create_user(
+            username=u_code, 
+            email="none", 
+            password=str(code),  
+            first_name="Guest",  
+            last_name="User"
+        )
 
-    Guest.objects.create(
-        owner=owner,
-        user=guest_user,
-        code=code,
-        house_id=owner.house_id 
-    )
-    
-    guests = Guest.objects.filter(owner=owner).exclude(user__first_name="Guest")
-    print(str(owner.house_id))
-    return render(request, 'my_guests.html', {'success': f'Guest code {code} generated successfully!', 'code': code, 'house':owner.house_id, 'guests': guests})
+        # Create guest object
+        guest = Guest.objects.create(
+            owner=owner,
+            user=guest_user,
+            code=code,
+            house_id=owner.house_id
+        )
+
+        # Save selected rooms (assuming you have a Room model related to the guest)
+        selected_rooms = request.POST.getlist('rooms')
+        for room_id in selected_rooms:
+            room = request.user.house.room.objects.get(id=room_id)
+            guest.rooms.add(room)
+
+        guests = Guest.objects.filter(owner=owner).exclude(user__first_name="Guest")
+        return render(request, 'my_guests.html', {'success': f'Guest code {code} generated successfully!', 'code': code, 'house': owner.house_id, 'guests': guests})
+
+    # Fetch available rooms for the owner
+    rooms = Room.objects.filter(house=owner.house)
+    return render(request, 'generate_guest_code.html', {'rooms': rooms})
+
 
 def generate_unique_code():
     return random.randint(10000000, 99999999)

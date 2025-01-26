@@ -12,21 +12,23 @@
             {% csrf_token %}
             <label for="name">Automation Name:</label>
             <input type="text" name="name" required>
+                
+            <br>
+            <label for="trigger_time">Trigger time:</label>
+            <input type="time" name="trigger_time" required>
         
-            <label for="trigger_type">Trigger Type:</label>
-            <select name="trigger_type" required>
-                <option value="time">Time</option>
-                <option value="temperature">Temperature</option>
-                <option value="humidity">Humidity</option>
-            </select>
-        
-            <label for="trigger_value">Trigger Value:</label>
-            <input type="text" name="trigger_value" required>
-        
-            <label for="devices">Select Devices:</label><br>
+            <br>
+            <label for="devices_on">Select Devices to Turn ON:</label><br>
             {% for device in devices %}
-                <input type="checkbox" name="devices" value="{{ device.device_id }}"> {{ device.name }}<br>
+                <input type="checkbox" name="devices_on" value="{{ device.device_id }}"> {{ device.name }} #{{ device.device_number }} ({{ device.room.name }}) <br>
             {% endfor %}
+            
+            <br>
+            <label for="devices_off">Select Devices to Turn OFF:</label><br>
+            {% for device in devices %}
+                <input type="checkbox" name="devices_off" value="{{ device.device_id }}"> {{ device.name }} #{{ device.device_number }} ({{ device.room.name }}) <br>
+            {% endfor %}
+            
         
             <button type="submit">Create Automation</button>
         </form>

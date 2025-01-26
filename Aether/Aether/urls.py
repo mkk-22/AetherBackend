@@ -68,6 +68,7 @@ urlpatterns = [
     path('add_automation/<str:room_id>/', automation_views.add_automation, name='add_automation'),
     path('edit_automation/<int:automation_id>/', automation_views.edit_automation, name='edit_automation'),
     path('delete_automation/<int:automation_id>/', automation_views.delete_automation, name='delete_automation'),
+    path('details/<int:automation_id>/', automation_views.automation_details, name='automation_details'), 
     
     path('automations_list/', automation_views.automations_list, name='automations_list'),
     path('add_automation/', automation_views.add_automation, name='add_automation'),

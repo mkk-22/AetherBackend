@@ -1,93 +1,71 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Automation
 from devices.models import Device
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def automations_list(request):
     automations = Automation.objects.all()
     return render(request, 'automations_list.html', {'automations': automations})
 
+@login_required
 def add_automation(request):
     devices = Device.objects.all()
 
     if request.method == 'POST':
-        print("Form received")
-        
-        # Collecting form data
         name = request.POST['name']
-        trigger_type = request.POST['trigger_type']
-        trigger_value = request.POST['trigger_value']
-        selected_devices = request.POST.getlist('devices')
+        trigger_time = request.POST['trigger_time']
+        devices_on_ids = request.POST.getlist('devices_on')
+        devices_off_ids = request.POST.getlist('devices_off')
 
-        # Debugging selected devices
-        print(f"Selected devices: {selected_devices}")
-        
-        # Ensure devices exist and are valid
-        selected_devices = Device.objects.filter(device_id__in=selected_devices)
-        
-        # Debugging found devices
-        print(f"Devices found: {selected_devices}")
-        
-        # Only proceed if at least one device was selected
-        if selected_devices:
-            print("About to create automation...")
+        devices_on = Device.objects.filter(device_id__in=devices_on_ids)
+        devices_off = Device.objects.filter(device_id__in=devices_off_ids)
 
-            # Create and save the automation
+        if devices_on or devices_off:
             automation = Automation.objects.create(
                 name=name,
-                trigger_type=trigger_type,
-                trigger_value=trigger_value
+                trigger_time=trigger_time
             )
-            print("Created 1/2")
 
-            automation.devices.set(selected_devices)
-            print("Created 2/2")
-
+            automation.devices_on.set(devices_on)
+            automation.devices_off.set(devices_off)
             automation.save()
-            print("Automation created!")
 
             return redirect('automations_list')
 
-        else:
-            print("No valid devices found!")
-
-    print("Failed")
     return render(request, 'add_automation.html', {'devices': devices})
 
-
-
-
+@login_required
 def edit_automation(request, automation_id):
     automation = get_object_or_404(Automation, id=automation_id)
     devices = Device.objects.all()
 
     if request.method == 'POST':
-        # Get the updated data from the form
         name = request.POST['name']
-        trigger_type = request.POST['trigger_type']
-        trigger_value = request.POST['trigger_value']
-        selected_devices = request.POST.getlist('devices')
+        trigger_time = request.POST['trigger_time']
+        devices_on_ids = request.POST.getlist('devices_on')
+        devices_off_ids = request.POST.getlist('devices_off')
 
-        print("Selected devices (POST):", selected_devices)
+        devices_on = Device.objects.filter(device_id__in=devices_on_ids)
+        devices_off = Device.objects.filter(device_id__in=devices_off_ids)
 
-        # Ensure devices exist and are valid
-        selected_devices = Device.objects.filter(device_id__in=selected_devices)
-        print("Devices found:", selected_devices)
-
-        if selected_devices:
+        if devices_on or devices_off:
             automation.name = name
-            automation.trigger_type = trigger_type
-            automation.trigger_value = trigger_value
-            automation.devices.set(selected_devices)  # Update the many-to-many relationship
+            automation.trigger_time = trigger_time
+            automation.devices_on.set(devices_on)
+            automation.devices_off.set(devices_off)
             automation.save()
-            print("Automation updated!")
+
             return redirect('automations_list')
 
-        print("No valid devices found!")
-    
     return render(request, 'edit_automation.html', {'automation': automation, 'devices': devices})
 
+@login_required
+def automation_details(request, automation_id):
+    automation = get_object_or_404(Automation, id=automation_id)
+    return render(request, 'automation_details.html', {'automation': automation})
 
-
+@login_required
 def delete_automation(request, automation_id):
     automation = get_object_or_404(Automation, id=automation_id)
     automation.delete()

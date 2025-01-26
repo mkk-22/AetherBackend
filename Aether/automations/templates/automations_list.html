@@ -7,13 +7,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <h1>All Automations</h1>
+        <h1>Automations</h1>
 
         <ul>
             {% for automation in automations %}
                 <li>
                     <strong>{{ automation.name }}</strong> 
-                    ({{ automation.trigger_type }}: {{ automation.trigger_value }})
+                    Trigger time: {{ automation.trigger_time }}
+                    <a href="{% url 'automation_details' automation.id %}">View Details</a>
                     <form action="{% url 'delete_automation' automation.id %}" method="post" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit">Delete</button>
@@ -26,6 +27,6 @@
         </ul>
 
         <p><a href="{% url 'add_automation' %}">Add Automation</a></p>
-        <p><a href="{% url 'roomsanddevices' %}">Back to Rooms and Devices</a></p>
+        <p><a href="{% url 'home' %}"> Back to Home </a></p>
     </body>
 </html>
