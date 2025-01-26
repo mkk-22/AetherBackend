@@ -1,23 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Ambiance Modes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <h1>Ambiance Modes for {{ room.name }}</h1>
+    <h1>Ambiance Modes</h1>
+
     <ul>
-        {% for mode in modes %}
-            <li>
-                <strong>{{ mode.name }}</strong>
-                <a href="{% url 'edit_ambiance_mode' mode_id=mode.id %}">Edit Mode</a>
-                <a href="{% url 'delete_ambiance_mode' mode_id=mode.id %}">Delete</a>
-            </li>
+        {% for room in rooms %}
+            <h2>{{ room.name }}</h2>
+            <ul>
+                {% for mode in room.modes.all %}
+                    <li>
+                        <strong>{{ mode.name }}</strong> - Room: {{ mode.room.name }}
+                        <a href="{% url 'mode_details' mode.id %}">Details</a> | 
+                        <a href="{% url 'edit_ambiance_mode' mode.id %}">Edit</a> | 
+                        <form action="{% url 'delete_ambiance_mode' mode.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">Delete</button>
+                        </form>
+                    </li>
+                {% empty %}
+                    <li>No modes available.</li>
+                {% endfor %}
+            </ul>
+        {% empty %}
+            <p>No rooms available in this house.</p>
         {% endfor %}
     </ul>
 
-    <a href="{% url 'add_ambiance_mode' room_id=room.room_id %}">Add Ambiance Mode</a><br>
-    <a href="{% url 'roomsanddevices' %}">Back to Room</a>
+    <p><a href="{% url 'add_ambiance_mode'  %}">Add Mode</a></p>
+    <p><a href="{% url 'home' %}">Back to Home</a></p>
 </body>
 </html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ mode.name }} - Mode Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <h1>Mode Details: {{ mode.name }}</h1>
+    <p><strong>Room:</strong> {{ mode.room.name }}</p>
+    <p><strong>Devices Controlled:</strong></p>
+    <ul>
+        {% for mode_device in mode.devices.all %}
+            <li>
+                <strong>{{ mode_device.device.name }} (Room: {{ mode_device.device.room.name }})</strong><br>
+                {% if mode_device.light_color %}
+                    Light Color: {{ mode_device.light_color }}<br>
+                {% endif %}
+                {% if mode_device.volume %}
+                    Volume: {{ mode_device.volume }}<br>
+                {% endif %}
+                {% if mode_device.temperature %}
+                    Temperature: {{ mode_device.temperature }}<br>
+                {% endif %}
+                Status: {{ mode_device.status }}
+            </li>
+        {% empty %}
+            <li>No devices set for this mode.</li>
+        {% endfor %}
+    </ul>
+
+    <p>
+       <a href="{% url 'edit_ambiance_mode' mode.id %}">Edit Mode</a> | 
+       <form action="{% url 'delete_ambiance_mode' mode.id %}" method="post" style="display:inline;">
+           {% csrf_token %}
+           <button type="submit">Delete Mode</button>
+       </form>
+    </p>
+
+    <p><a href="{% url 'modes_list' %}">Back to Modes</a></p>
+</body>
+</html>

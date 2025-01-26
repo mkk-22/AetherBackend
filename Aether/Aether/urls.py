@@ -59,9 +59,10 @@ urlpatterns = [
     path('join_event/<int:event_id>/', energy_views.join_event, name='join_event'),
     path('leave_event/<int:event_id>/', energy_views.leave_event, name='leave_event'),
     
-    path('ambiance_modes/<str:room_id>/', ambiance_views.ambiance_modes, name='ambiance_modes'),
-    path('add_ambiance_mode/<str:room_id>/', ambiance_views.add_ambiance_mode, name='add_ambiance_mode'),
+    path('modes_list/', ambiance_views.modes_list, name='modes_list'),
+    path('add_ambiance_mode/', ambiance_views.add_ambiance_mode, name='add_ambiance_mode'),
     path('edit_ambiance_mode/<int:mode_id>/', ambiance_views.edit_ambiance_mode, name='edit_ambiance_mode'),
+    path('mode_details/<int:mode_id>/', ambiance_views.mode_details, name='mode_details'),
     path('delete_ambiance_mode/<int:mode_id>/', ambiance_views.delete_ambiance_mode, name='delete_ambiance_mode'),
     
     path('automations/<str:room_id>/', automation_views.automations_list, name='automations_list'),

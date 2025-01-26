@@ -1,34 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Edit Ambiance Mode</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <h1>Edit {{ mode.name }} Mode</h1>
+    <h1>Edit Mode: {{ mode.name }}</h1>
+
     <form method="post">
         {% csrf_token %}
+        <h3>Devices in this Mode:</h3>
         {% for device in devices %}
-            <h3>{{ device.name }}</h3>
-            <label for="status_{{ device.device_id }}">Status:</label>
-            <select name="status_{{ device.device_id }}">
-                <option value="on">On</option>
-                <option value="off">Off</option>
-            </select><br>
+            <label>{{ device.name }} (Room: {{ device.room.name }})</label><br>
 
             <label for="light_color_{{ device.device_id }}">Light Color:</label>
-            <input type="text" name="light_color_{{ device.device_id }}"><br>
+            <input type="text" id="light_color_{{ device.device_id }}" name="light_color_{{ device.device_id }}" value="{{ device.ambiance_mode_device.light_color }}"><br>
 
             <label for="volume_{{ device.device_id }}">Volume:</label>
-            <input type="number" name="volume_{{ device.device_id }}"><br>
+            <input type="number" id="volume_{{ device.device_id }}" name="volume_{{ device.device_id }}" value="{{ device.ambiance_mode_device.volume }}"><br>
 
             <label for="temperature_{{ device.device_id }}">Temperature:</label>
-            <input type="number" name="temperature_{{ device.device_id }}"><br>
-            <hr>
+            <input type="number" id="temperature_{{ device.device_id }}" name="temperature_{{ device.device_id }}" value="{{ device.ambiance_mode_device.temperature }}"><br>
+
+            <label for="status_{{ device.device_id }}">Status:</label>
+            <select id="status_{{ device.device_id }}" name="status_{{ device.device_id }}">
+                <option value="on" {% if device.ambiance_mode_device.status == 'on' %}selected{% endif %}>On</option>
+                <option value="off" {% if device.ambiance_mode_device.status == 'off' %}selected{% endif %}>Off</option>
+            </select><br><br>
         {% endfor %}
+
         <button type="submit">Save Changes</button>
     </form>
-    <a href="{% url 'roomsanddevices' %}">Back to Room</a>
+
+    <p><a href="{% url 'modes_list' %}">Back to Modes</a></p>
 </body>
 </html>

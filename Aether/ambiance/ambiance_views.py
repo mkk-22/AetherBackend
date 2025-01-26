@@ -1,24 +1,27 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import AmbianceMode, AmbianceModeDevice
-from devices.models import Room, Device
+from devices.models import House, Room, Device
 
 
-def ambiance_modes(request, room_id):
-    room = get_object_or_404(Room, room_id=room_id)
-    modes = room.modes.all()
-    return render(request, 'modes_list.html', {'room': room, 'modes': modes})
 
+def modes_list(request):
+    house = get_object_or_404(House, house_id=request.user.owner.house_id)
+    rooms = house.rooms.all()    
+    return render(request, 'modes_list.html', {'house': house, 'rooms': rooms})
 
-def add_ambiance_mode(request, room_id):
-    room = get_object_or_404(Room, room_id=room_id)
+def add_ambiance_mode(request):
+    house = get_object_or_404(House, house_id=request.user.owner.house_id)
+    rooms = house.rooms.all()  
 
     if request.method == 'POST':
         name = request.POST.get('name')
+        room_id = request.POST.get('room')  
+        room = get_object_or_404(Room, id=room_id) 
+
         AmbianceMode.objects.create(room=room, name=name)
-        return redirect('ambiance_modes', room_id=room_id)
+        return redirect('modes_list')
 
-    return render(request, 'add_mode.html', {'room': room})
-
+    return render(request, 'add_mode.html', {'house': house, 'rooms': rooms})
 
 def edit_ambiance_mode(request, mode_id):
     mode = get_object_or_404(AmbianceMode, id=mode_id)
@@ -44,13 +47,16 @@ def edit_ambiance_mode(request, mode_id):
                 temperature=temperature or None,
                 status=status,
             )
-        return redirect('ambiance_modes', room_id=mode.room.room_id)
+        return redirect('modes_list')
 
     return render(request, 'edit_mode.html', {'mode': mode, 'devices': devices})
 
+def mode_details(request, mode_id):
+    mode = get_object_or_404(AmbianceMode, id=mode_id)
+    return render(request, 'mode_details.html', {'mode': mode})
 
 def delete_ambiance_mode(request, mode_id):
     mode = get_object_or_404(AmbianceMode, id=mode_id)
     room_id = mode.room.room_id
     mode.delete()
-    return redirect('ambiance_modes', room_id=room_id)
+    return redirect('modes_list')

@@ -15,7 +15,7 @@ class AmbianceModeDevice(models.Model):
     device = models.ForeignKey(Device, related_name='controlled_by_modes', on_delete=models.CASCADE)
     light_color = models.CharField(max_length=100, blank=True, null=True)  # Optional (e.g., "blue", "red")
     volume = models.PositiveIntegerField(blank=True, null=True)  # Optional, for speaker control
-    temperature = models.FloatField(blank=True, null=True)  # Optional, for thermostat control
+    temperature = models.FloatField(default='24.0')
     status = models.CharField(max_length=50, choices=[('on', 'On'), ('off', 'Off')], default='on')  # Turn on/off
 
     def __str__(self):
