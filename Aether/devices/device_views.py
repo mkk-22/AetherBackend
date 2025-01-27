@@ -65,7 +65,7 @@ def add_room(request):
             return render(request, 'add_room.html', {'error': 'Room name is required.'})
 
         room_id = generate_unique_room_id()
-        while request.user.house.rooms.filter(room_id=room_id).exists():
+        while house.rooms.filter(room_id=room_id).exists():
                room_id = generate_unique_code()
 
         # Create the new room

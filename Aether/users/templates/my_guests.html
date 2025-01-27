@@ -10,7 +10,7 @@
     </head>
     <body>
     
-        <h1> Current Guests </h1>
+        <h1>Current Guests</h1>
         <ul>
             {% for guest in guests %}
                 <li>
@@ -29,7 +29,7 @@
             {% endfor %}
         </ul>
         
-        <a href="{% url 'generate_guest_code' %}">Generate Guest Code</a>
+        <a href="{% url 'add_guest' %}"> Add a Guest </a>
 
         {% if success %}
             <p style="color: green;">{{ success }}</p>
@@ -41,8 +41,7 @@
             <p style="color: red;">{{ error }}</p>
         {% endif %}
         
-        <p> <a href="{% url 'home' %}"> Back to Home</a> </p>
+        <p> <a href="{% url 'home' %}">Back to Home</a> </p>
         <script src="" async defer></script>
     </body>
 </html>
-
