@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Owner, User, Guest
-from devices.models import House
+from devices.models import House, Room
 from .forms import LoginForm, OwnerSignupForm, GuestLoginForm
 
 def start(request):
@@ -127,6 +127,7 @@ def my_guests(request):
 
 @login_required
 def generate_guest_code(request):
+    print("method called")
     owner = Owner.objects.get(user=request.user)
 
     # Check guest limit
@@ -138,44 +139,49 @@ def generate_guest_code(request):
     if current_guest_count >= guest_limit:
         return render(request, 'my_guests.html', {'error': f'You have reached the guest limit of {guest_limit} guests.'})
 
-    if request.method == 'POST':
-        # Generate guest code
+
+    # Generate guest code
+    code = generate_unique_code()
+    while Guest.objects.filter(code=code).exists():
         code = generate_unique_code()
-        while Guest.objects.filter(code=code).exists():
-            code = generate_unique_code()
+        
+    # Generate unique username for the guest
+    u_code = generate_unique_code()
+    while User.objects.filter(username=u_code).exists():
         u_code = generate_unique_code()
-        while User.objects.filter(username=u_code).exists():
-            u_code = generate_unique_code()
-
-        # Create guest user
-        guest_user = User.objects.create_user(
-            username=u_code, 
-            email="none", 
-            password=str(code),  
-            first_name="Guest",  
+        
+    # Create guest user
+    guest_user = User.objects.create_user(
+        username=u_code,
+            email="none",  # Consider using a placeholder or validating later
+            password=str(code),
+            first_name="Guest",
             last_name="User"
-        )
-
+    )
+    print("Guest object created")
+    guest_user.save()
+        
         # Create guest object
-        guest = Guest.objects.create(
+    guest = Guest.objects.create(
             owner=owner,
             user=guest_user,
             code=code,
-            house_id=owner.house_id
-        )
+            house_id=owner.house_id  # Use house_id from owner
+    )
+    guest.save()
 
-        # Save selected rooms (assuming you have a Room model related to the guest)
-        selected_rooms = request.POST.getlist('rooms')
-        for room_id in selected_rooms:
-            room = request.user.house.room.objects.get(id=room_id)
-            guest.rooms.add(room)
+        # Save selected rooms
+    selected_rooms = request.POST.getlist('rooms')
+    for room_id in selected_rooms:
+            try:
+                room = Room.objects.get(id=room_id, house_id=owner.house_id)  # Use house_id to filter rooms
+                guest.rooms.add(room)
+            except Room.DoesNotExist:
+                continue  # Handle case where the room might not exist or not belong to this house
 
-        guests = Guest.objects.filter(owner=owner).exclude(user__first_name="Guest")
-        return render(request, 'my_guests.html', {'success': f'Guest code {code} generated successfully!', 'code': code, 'house': owner.house_id, 'guests': guests})
+    guests = Guest.objects.filter(owner=owner).exclude(user__first_name="Guest")
+    return render(request, 'my_guests.html', {'success': f'Guest code {code} generated successfully!', 'code': code, 'house': owner.house_id, 'guests': guests})
 
-    # Fetch available rooms for the owner
-    rooms = Room.objects.filter(house=owner.house)
-    return render(request, 'generate_guest_code.html', {'rooms': rooms})
 
 
 def generate_unique_code():
