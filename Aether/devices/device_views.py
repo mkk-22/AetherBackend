@@ -1,6 +1,7 @@
 from pathlib import Path
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import House, Room, Device
+from users.models import Guest
 from energy.models import IntervalReading
 from django.contrib.auth.decorators import login_required
 from users.user_views import generate_unique_code
@@ -149,27 +150,32 @@ from django.utils.timezone import now
 def toggle_device(request, device_id):
     device = get_object_or_404(Device, device_id=device_id)
     
-    if device.status == 'off':  # Toggling the device ON
+    if device.status == 'off':  
         IntervalReading.objects.create(
             device_id=device.device_id,
-            homeowner=request.user.owner,  
+            homeowner=device.room.house.owner,  
             start=now()
         )
-        device.status = 'on'  # Update the status to 'on'
-    else:  # Toggling the device OFF
+        device.status = 'on'  
+    else: 
         interval = IntervalReading.objects.filter(
             device_id=device.device_id,
             end__isnull=True  
         ).first()
 
-        if interval:  # Ensure there's an open interval
+        if interval:  
             interval.end = now()
             interval.usage = calculate_usage(interval)
             interval.save()
-        device.status = 'off'  # Update the status to 'off'
+        device.status = 'off' 
 
     device.save()
-    return redirect('roomsanddevices')
+
+    if hasattr(request.user, 'guest'):  
+        return redirect('guest_home')  
+    else:
+        return redirect('roomsanddevices') 
+    
 
 
 from decimal import Decimal

@@ -181,7 +181,13 @@ def generate_unique_code():
 
 @login_required
 def guest_home(request):
-    return render(request, 'guest_home.html')
+    try:
+        guest = Guest.objects.get(user=request.user)
+    except Guest.DoesNotExist:
+        return render(request, 'guest_home.html', {'error': 'Guest not found.'})
+
+    allowed_rooms = guest.allowed_rooms.prefetch_related('devices')
+    return render(request, 'guest_home.html', {'rooms':allowed_rooms})
 
 @login_required
 def settings(request):
