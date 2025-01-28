@@ -1,52 +1,54 @@
 [
     {
         "name": "Thermostat",
-        "general_product_code": "A0001",
+        "general_product_code": "AV0001",
         "average_energy_consumption_per_hour": 0.03,
         "manufacturer": "Aether"
     },
     {
         "name": "Humidity Control Unit",
-        "general_product_code": "A0002",
+        "general_product_code": "AT0002",
         "average_energy_consumption_per_hour": 0.3,
         "manufacturer": "Aether"
     },
     {
         "name": "Oil Diffuser",
         "options": ["sandalwood", "rose", "ocean", "cookie", "eucalyptus", "lemongrass"],
-        "general_product_code": "A0003",
+        "general_product_code": "AF0003",
         "average_energy_consumption_per_hour": 0.01,
         "manufacturer": "Aether"
     },
     {
         "name": "Air Purifier",
-        "general_product_code": "A0004",
+        "general_product_code": "AT0004",
         "average_energy_consumption_per_hour": 0.15,
         "manufacturer": "Aether"
     },
     {
         "name": "Chromatherapy Lights",
         "options": ["red", "gold", "white", "green", "blue", "violet"],
-        "general_product_code": "A0005",
+        "general_product_code": "AF0005",
         "average_energy_consumption_per_hour": 0.06,
         "manufacturer": "Aether"
     },
     {
         "name": "Smart Curtains",
-        "general_product_code": "A0006",
+        "options": ["open", "shut"],
+        "general_product_code": "AF0006",
         "average_energy_consumption_per_hour": 0.001,
         "manufacturer": "Aether"
     },
     {
         "name": "Smart Lock",
-        "general_product_code": "A0007",
+        "options": ["lock", "unlock"],
+        "general_product_code": "AF0007",
         "average_energy_consumption_per_hour": 0.002,
         "manufacturer": "Aether"
     },
     {
         "name": "Alarm",
         "options": ["sleep", "emergency", "alert"],
-        "general_product_code": "A0008",
+        "general_product_code": "AF0008",
         "average_energy_consumption_per_hour": 0.005,
         "manufacturer": "Aether"
     }, 
@@ -54,13 +56,13 @@
 
     {
         "name": "Sprinkler",
-        "general_product_code": "O0001",
+        "general_product_code": "OT0001",
         "average_energy_consumption_per_hour": 0.02,
         "manufacturer": "Aether"
     },
     {
         "name": "Privacy Glass",
-        "general_product_code": "O0002",
+        "general_product_code": "OT0002",
         "average_energy_consumption_per_hour": 0.01,
         "manufacturer": "Aether"
     },
@@ -69,19 +71,20 @@
 
     {
         "name": "Smart TV",
-        "general_product_code": "L0001",
+        "general_product_code": "LT0001",
         "average_energy_consumption_per_hour": 0.2,
         "manufacturer": "Aether"
     },    
     {
         "name": "Speakers",
-        "general_product_code": "L0002",
+        "general_product_code": "LT0002",
         "average_energy_consumption_per_hour": 0.05,
         "manufacturer": "Aether"
     },    
     {
         "name": "RoboVacuum",
-        "general_product_code": "L0003",
+        "options": ["daily", "deep clean"],
+        "general_product_code": "LF0003",
         "average_energy_consumption_per_hour": 0.15,
         "manufacturer": "Aether"
     },   
@@ -89,7 +92,7 @@
 
     {
         "name": "Floatation Bathtub",
-        "general_product_code": "B0001",
+        "general_product_code": "BT0001",
         "average_energy_consumption_per_hour": 2.0,
         "manufacturer": "Aether"
     },    
@@ -98,14 +101,14 @@
    
     {
         "name": "Smart Fridge",
-        "general_product_code": "K0001",
+        "general_product_code": "KV0001",
         "average_energy_consumption_per_hour": 0.3,
         "manufacturer": "Aether"
     },
     {
         "name": "Smart Oven",
-        "options": ["preheat"],
-        "general_product_code": "K0002",
+        "options": ["preheat", "baking"],
+        "general_product_code": "KF0002",
         "average_energy_consumption_per_hour": 2.25,
         "manufacturer": "Aether"
     },
@@ -114,7 +117,7 @@
     {
         "name": "Water Monitoring System",
         "options": ["secure", "leak"],
-        "general_product_code": "M0001",
+        "general_product_code": "MM0001",
         "average_energy_consumption_per_hour": 0.01,
         "manufacturer": "Aether"
     }, 
@@ -122,7 +125,7 @@
     {
         "name": "Motion Sensor",
         "options": ["idle", "triggered"],
-        "general_product_code": "M0002",
+        "general_product_code": "MM0002",
         "average_energy_consumption_per_hour": 0.0025,
         "manufacturer": "Aether"
     }

@@ -51,6 +51,7 @@ urlpatterns = [
     path('remove_device/<int:device_id>/', device_views.remove_device, name='remove_device'),
     path('toggle_device/<int:device_id>/', device_views.toggle_device, name='toggle_device'),
     path('toggle_device/', device_views.toggle_device, name='toggle_device'),
+    path('update_device_state/<str:device_id>/', device_views.update_device_state, name='update_device_state'),
     path('device/<str:device_id>/', device_views.device_info, name='device_info'),
     
     path('energy_home/', energy_views.energy_home, name='energy_home'),
