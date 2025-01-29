@@ -1,38 +1,138 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Add Automation</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
-    <body>
-        <h1>Add New Automation</h1>
-        <form method="POST">
-            {% csrf_token %}
-            <label for="name">Automation Name:</label>
-            <input type="text" name="name" required>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Automation</title>
+    <style>
+        .device-item {
+            margin-bottom: 10px;
+        }
+        .added-device {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add Automation</h1>
+    <form method="POST">
+        {% csrf_token %}
+        
+        <label for="name">Automation Name:</label>
+        <input type="text" name="name" required>
+    
+        <label for="trigger_time">Trigger Time:</label>
+        <input type="time" id="trigger_time" name="trigger_time" required>
+        <br><br>
+
+        <!-- Room Dropdown -->
+        <label for="room">Room:</label>
+        <select id="room" onchange="updateDevices()" name="room" required>
+            <option value="">Select a room</option>
+            {% for room in rooms %}
+                <option value="{{ room.room_id }}">{{ room.name }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Device Dropdown -->
+        <label for="device">Device:</label>
+        <select id="device" name="device" disabled required>
+            <option value="">Select a device</option>
+        </select>
+
+        <!-- On/Off Button -->
+        <button type="button" id="status-toggle" disabled onclick="toggleDeviceStatus()">Off</button>
+        
+        <!-- Add Device Button -->
+        <button type="button" id="add-device" disabled onclick="addDevice()">+ Add Device</button>
+
+        <br><br>
+
+        <!-- Added Devices List -->
+        <div id="added-devices"></div>
+
+        <button type="submit">Save Automation</button>
+    </form>
+    
+    <p><a href="{% url 'automations_list' %}">Back to Automations</a></p>
+
+    <script>
+        let deviceStatus = "off"; // initial status
+
+        // Parse the JSON data passed from Django
+        let devicesByRoom = JSON.parse('{{ devices_by_room_json|escapejs }}');
+
+        // Update devices dropdown based on room selection
+        function updateDevices() {
+            var roomId = document.getElementById("room").value;
+            var deviceSelect = document.getElementById("device");
+            var statusButton = document.getElementById("status-toggle");
+            var addButton = document.getElementById("add-device");
+
+            // Enable device dropdown
+            deviceSelect.disabled = false;
+            statusButton.disabled = false;
+            addButton.disabled = false;
+
+            // Clear existing devices
+            deviceSelect.innerHTML = '<option value="">Select a device</option>';
+
+            if (roomId) {
+                var roomDevices = devicesByRoom[roomId] || [];
+                roomDevices.forEach(function(device) {
+                    var option = document.createElement("option");
+                    option.value = device.id;
+                    option.text = device.name;
+                    deviceSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Toggle the status of the device
+        function toggleDeviceStatus() {
+            var statusButton = document.getElementById("status-toggle");
+            if (deviceStatus === "off") {
+                deviceStatus = "on";
+                statusButton.textContent = "On";
+                statusButton.style.backgroundColor = "green";
+            } else {
+                deviceStatus = "off";
+                statusButton.textContent = "Off";
+                statusButton.style.backgroundColor = "red";
+            }
+        }
+
+        // Add selected device to the list
+        function addDevice() {
+            var roomSelect = document.getElementById("room");
+            var deviceSelect = document.getElementById("device");
+            var addedDevicesDiv = document.getElementById("added-devices");
+
+            var roomId = roomSelect.value;
+            var roomName = roomSelect.options[roomSelect.selectedIndex].text;
+            var deviceId = deviceSelect.value;
+            var deviceName = deviceSelect.options[deviceSelect.selectedIndex].text;
+
+            if (roomId && deviceId) {
+                var div = document.createElement("div");
+                div.className = "added-device";
+
+                div.innerHTML = `
+                    Room: ${roomName} | Device: ${deviceName} | Status: ${deviceStatus}
+                    <input type="hidden" name="rooms[]" value="${roomId}">
+                    <input type="hidden" name="devices[]" value="${deviceId}">
+                    <input type="hidden" name="statuses[]" value="${deviceStatus}">
+                `;
                 
-            <br>
-            <label for="trigger_time">Trigger time:</label>
-            <input type="time" name="trigger_time" required>
-        
-            <br>
-            <label for="devices_on">Select Devices to Turn ON:</label><br>
-            {% for device in devices %}
-                <input type="checkbox" name="devices_on" value="{{ device.device_id }}"> {{ device.name }} #{{ device.device_number }} ({{ device.room.name }}) <br>
-            {% endfor %}
-            
-            <br>
-            <label for="devices_off">Select Devices to Turn OFF:</label><br>
-            {% for device in devices %}
-                <input type="checkbox" name="devices_off" value="{{ device.device_id }}"> {{ device.name }} #{{ device.device_number }} ({{ device.room.name }}) <br>
-            {% endfor %}
-            
-        
-            <button type="submit">Create Automation</button>
-        </form>
-        
-        <p><a href="{% url 'automations_list' %}">Back to Automations</a></p>
-    </body>
+                addedDevicesDiv.appendChild(div);
+
+                // Reset the selections
+                document.getElementById("device").value = "";
+                document.getElementById("status-toggle").textContent = "Off";
+                document.getElementById("status-toggle").style.backgroundColor = "red";
+                deviceStatus = "off";
+            }
+        }
+    </script>
+</body>
 </html>
