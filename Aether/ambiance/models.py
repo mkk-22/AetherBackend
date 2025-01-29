@@ -15,6 +15,8 @@ class AmbianceModeDevice(models.Model):
     mode = models.ForeignKey(AmbianceMode, related_name='devices', on_delete=models.CASCADE)
     device = models.ForeignKey(Device, related_name='controlled_by_mode', on_delete=models.CASCADE)
     state = models.CharField(max_length=100, default=' ')
+    prev_status = models.CharField(max_length=100, default=' ')
+    prev_state = models.CharField(max_length=100, default=' ')
 
     def __str__(self):
         return f"{self.device.name} in {self.mode.name} mode"

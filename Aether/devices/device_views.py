@@ -28,13 +28,13 @@ def roomsanddevices(request):
             if device.get_device_type() == 'Fixed':
                 fixed_device = device.fixed_device.first()
                 if fixed_device:
-                    device_options[device.device_id] = fixed_device.options.split(",")
+                    device_options[device.device_id] = fixed_device.options.split(", ")
                     updated_device_states[device.device_id] = fixed_device.state
 
             elif device.get_device_type() == 'Monitor':
                 monitor_device = device.monitor_device.first()
                 if monitor_device:
-                    device_options[device.device_id] = monitor_device.options.split(",")
+                    device_options[device.device_id] = monitor_device.options.split(", ")
                     updated_device_states[device.device_id] = monitor_device.state
 
             elif device.get_device_type() == 'Variable':
@@ -58,11 +58,12 @@ def roomsanddevices(request):
             room.save()
             device.save()
 
+    print(updated_device_states)
     return render(request, 'roomsanddevices.html', {
         'house': house,
         'rooms': rooms,
         'device_options': device_options,
-        'updated_device_states': updated_device_states  # Add this line to pass updated states
+        'updated_device_states': updated_device_states  
     })
 
 def generate_unique_room_id():
