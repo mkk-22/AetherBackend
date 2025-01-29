@@ -62,6 +62,7 @@ urlpatterns = [
     path('leave_event/<int:event_id>/', energy_views.leave_event, name='leave_event'),
     
     path('modes_list/', ambiance_views.modes_list, name='modes_list'),
+    path('toggle_ambiance/<int:mode_id>/', ambiance_views.toggle_ambiance, name='toggle_ambiance'),
     path('add_ambiance_mode/', ambiance_views.add_ambiance_mode, name='add_ambiance_mode'),
     path('edit_ambiance_mode/<int:mode_id>/', ambiance_views.edit_ambiance_mode, name='edit_ambiance_mode'),
     path('mode_details/<int:mode_id>/', ambiance_views.mode_details, name='mode_details'),

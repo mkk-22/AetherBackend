@@ -15,9 +15,14 @@
             <ul>
                 {% for mode in room.modes.all %}
                     <li>
-                        <strong>{{ mode.name }}</strong> - Room: {{ mode.room.name }}
+                        <strong>{{ mode.name }}</strong> ({{ mode.room.name }})
+                        <form action="{% url 'toggle_ambiance' mode.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">
+                                {% if mode.status == 'on' %}Turn Off{% else %}Turn On{% endif %}
+                            </button>
+                        </form>
                         <a href="{% url 'mode_details' mode.id %}">Details</a> | 
-                        <a href="{% url 'edit_ambiance_mode' mode.id %}">Edit</a> | 
                         <form action="{% url 'delete_ambiance_mode' mode.id %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit">Delete</button>
