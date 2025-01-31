@@ -38,11 +38,11 @@ def edit_ambiance_mode(request, mode_id):
     # Populate the device options based on each device
     for device in devices:
         if device.general_product_code == 'AF0005':  
-            device_options[device.device_id] = [" red", " gold", " white", " green", " blue", " violet"]
+            device_options[device.device_id] = ["red", "gold", "white", "green", "blue", "violet"]
         elif device.general_product_code == 'AF0003':  
-            device_options[device.device_id] = [" clean", " sandalwood", " rose", " ocean", " cookie", " eucalyptus", " lemongrass"]
+            device_options[device.device_id] = ["clean", "sandalwood", "rose", "ocean", "cookie", "eucalyptus", "lemongrass"]
         elif device.general_product_code == 'LF0002':  
-            device_options[device.device_id] = [" idle", " pop", " jazz", " classical", " nature sounds", " white noise"]
+            device_options[device.device_id] = ["idle", "pop", "jazz", "classical", "nature sounds", "white noise"]
         elif device.general_product_code == 'AV0001':  
             device_options[device.device_id] = ['16', '24', '27', '32'] 
 
@@ -60,7 +60,7 @@ def edit_ambiance_mode(request, mode_id):
                     mode=mode,
                     device=device,
                     state=state,
-                    prev_state = '',
+                    prev_state = ' ',
                     prev_status = device.status
                 )
 
@@ -95,8 +95,8 @@ def toggle_ambiance(request, mode_id):
 
                 if fixed_device:
                     print("its fixed")
-                    ambiance_device.prev_state = fixed_device.state  # Store previous state (string)
-                    fixed_device.state = ambiance_device.state  # Apply ambiance mode state
+                    ambiance_device.prev_state = fixed_device.state.replace(' ', '')  # Store previous state (string)
+                    fixed_device.state = ambiance_device.state.replace(' ', '')  # Apply ambiance mode state
                     fixed_device.save()
                     print("new state: "+fixed_device.state)
 

@@ -30,6 +30,8 @@
             {% endfor %}
         </ul>
 
+        <a href="{% url 'edit_automation' automation.id %}">Edit</a>
+
         <p><a href="{% url 'automations_list' %}">Back to Automations</a></p>
     </body>
 </html>

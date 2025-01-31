@@ -19,7 +19,6 @@
                         {% csrf_token %}
                         <button type="submit">Delete</button>
                     </form>
-                    <a href="{% url 'edit_automation' automation.id %}">Edit</a>
                 </li>
             {% empty %}
                 <li>No automations available.</li>

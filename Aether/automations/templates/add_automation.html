@@ -9,129 +9,154 @@
             margin-bottom: 10px;
         }
         .added-device {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
+        .form-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <h1>Add Automation</h1>
-    <form method="POST">
+    <form method="POST" onsubmit="return validateForm()">
         {% csrf_token %}
         
-        <label for="name">Automation Name:</label>
-        <input type="text" name="name" required>
-    
-        <label for="trigger_time">Trigger Time:</label>
-        <input type="time" id="trigger_time" name="trigger_time" required>
-        <br><br>
+        <div class="form-row">
+            <label for="name">Automation Name:</label>
+            <input type="text" id="name" name="name" required>
 
-        <!-- Room Dropdown -->
-        <label for="room">Room:</label>
-        <select id="room" onchange="updateDevices()" name="room" required>
-            <option value="">Select a room</option>
-            {% for room in rooms %}
-                <option value="{{ room.room_id }}">{{ room.name }}</option>
-            {% endfor %}
-        </select>
+            <label for="trigger_time">Trigger Time:</label>
+            <input type="time" id="trigger_time" name="trigger_time" required>
+        </div>
 
-        <!-- Device Dropdown -->
-        <label for="device">Device:</label>
-        <select id="device" name="device" disabled required>
-            <option value="">Select a device</option>
-        </select>
+        <div class="form-row">
+            <!-- Room Dropdown -->
+            <select id="room" onchange="updateDevices()" >
+                <option value="">Select a room</option>
+                {% for room in rooms %}
+                    <option value="{{ room.room_id }}">{{ room.name }}</option>
+                {% endfor %}
+            </select>
 
-        <!-- On/Off Button -->
-        <button type="button" id="status-toggle" disabled onclick="toggleDeviceStatus()">Off</button>
-        
-        <!-- Add Device Button -->
-        <button type="button" id="add-device" disabled onclick="addDevice()">+ Add Device</button>
+            <!-- Device Dropdown -->
+            <select id="device" disabled >
+                <option value="{{ device.device_id }}">Select a device</option>
+            </select>
 
-        <br><br>
+            <!-- On/Off Button -->
+            <button type="button" id="status-toggle" disabled onclick="toggleDeviceStatus()">On/Off</button>
 
-        <!-- Added Devices List -->
+            <!-- Add Device Button -->
+            <button type="button" id="add-device" disabled onclick="addDevice()">+ Add Device</button>
+        </div>
+
         <div id="added-devices"></div>
 
         <button type="submit">Save Automation</button>
     </form>
-    
+
     <p><a href="{% url 'automations_list' %}">Back to Automations</a></p>
 
     <script>
-        let deviceStatus = "off"; // initial status
-
-        // Parse the JSON data passed from Django
+        let deviceStatus = "off";
         let devicesByRoom = JSON.parse('{{ devices_by_room_json|escapejs }}');
 
-        // Update devices dropdown based on room selection
         function updateDevices() {
-            var roomId = document.getElementById("room").value;
-            var deviceSelect = document.getElementById("device");
-            var statusButton = document.getElementById("status-toggle");
-            var addButton = document.getElementById("add-device");
+            let roomId = document.getElementById("room").value;
+            let deviceSelect = document.getElementById("device");
+            let statusButton = document.getElementById("status-toggle");
+            let addButton = document.getElementById("add-device");
 
-            // Enable device dropdown
-            deviceSelect.disabled = false;
-            statusButton.disabled = false;
-            addButton.disabled = false;
-
-            // Clear existing devices
-            deviceSelect.innerHTML = '<option value="">Select a device</option>';
+            deviceSelect.innerHTML = '<option value="device_id">Select a device</option>';
+            deviceSelect.disabled = !roomId;
+            statusButton.disabled = true;
+            addButton.disabled = true;
 
             if (roomId) {
-                var roomDevices = devicesByRoom[roomId] || [];
-                roomDevices.forEach(function(device) {
-                    var option = document.createElement("option");
-                    option.value = device.id;
+                let roomDevices = devicesByRoom[roomId] || [];
+                roomDevices.forEach(device => {
+                    let option = document.createElement("option");
+                    option.value = device.device_id;
                     option.text = device.name;
                     deviceSelect.appendChild(option);
                 });
+
+                deviceSelect.onchange = function() {
+                    statusButton.disabled = !deviceSelect.value;
+                    addButton.disabled = !deviceSelect.value;
+                };
             }
         }
 
-        // Toggle the status of the device
         function toggleDeviceStatus() {
-            var statusButton = document.getElementById("status-toggle");
-            if (deviceStatus === "off") {
-                deviceStatus = "on";
-                statusButton.textContent = "On";
-                statusButton.style.backgroundColor = "green";
-            } else {
-                deviceStatus = "off";
-                statusButton.textContent = "Off";
-                statusButton.style.backgroundColor = "red";
-            }
+            let statusButton = document.getElementById("status-toggle");
+            deviceStatus = deviceStatus === "off" ? "on" : "off";
+            statusButton.textContent = deviceStatus;
+            statusButton.style.backgroundColor = deviceStatus === "on" ? "green" : "red";
         }
 
-        // Add selected device to the list
+        let addedDevices = [];
+    
         function addDevice() {
-            var roomSelect = document.getElementById("room");
-            var deviceSelect = document.getElementById("device");
-            var addedDevicesDiv = document.getElementById("added-devices");
-
-            var roomId = roomSelect.value;
-            var roomName = roomSelect.options[roomSelect.selectedIndex].text;
-            var deviceId = deviceSelect.value;
-            var deviceName = deviceSelect.options[deviceSelect.selectedIndex].text;
-
-            if (roomId && deviceId) {
-                var div = document.createElement("div");
-                div.className = "added-device";
-
-                div.innerHTML = `
-                    Room: ${roomName} | Device: ${deviceName} | Status: ${deviceStatus}
-                    <input type="hidden" name="rooms[]" value="${roomId}">
-                    <input type="hidden" name="devices[]" value="${deviceId}">
-                    <input type="hidden" name="statuses[]" value="${deviceStatus}">
-                `;
-                
-                addedDevicesDiv.appendChild(div);
-
-                // Reset the selections
-                document.getElementById("device").value = "";
-                document.getElementById("status-toggle").textContent = "Off";
-                document.getElementById("status-toggle").style.backgroundColor = "red";
-                deviceStatus = "off";
+            let roomSelect = document.getElementById("room");
+            let deviceSelect = document.getElementById("device");
+            let statusButton = document.getElementById("status-toggle");
+        
+            let roomId = roomSelect.value;
+            let roomName = roomSelect.options[roomSelect.selectedIndex].text;
+            let deviceId = deviceSelect.value;
+            let deviceName = deviceSelect.options[deviceSelect.selectedIndex].text;
+            let currentStatus = statusButton.textContent.toLowerCase(); // Get current status
+        
+            if (!roomId || !deviceId) return;
+        
+            let deviceKey = `${roomId}-${deviceId}`; // Combine room ID and device ID
+        
+            if (addedDevices.includes(deviceKey)) {
+                alert("This device is already added in this room.");
+                return;
             }
+        
+            let div = document.createElement("div");
+            div.className = "added-device";
+            div.innerHTML = `
+                ${deviceName} (${roomName}) | Status: <strong>${currentStatus}</strong>
+                <input type="hidden" name="rooms[]" value="${roomId}">
+                <input type="hidden" name="devices[]" value="${deviceId}">
+                <input type="hidden" name="statuses[]" value="${currentStatus}">
+                <button type="button" onclick="removeDevice(this, '${deviceKey}')">Remove</button>
+            `;
+        
+            document.getElementById("added-devices").appendChild(div);
+            addedDevices.push(deviceKey); // Store as "roomId-deviceId" to allow same device in different rooms
+        
+            // Reset dropdowns and buttons
+            deviceSelect.value = "";
+            statusButton.textContent = "On/Off";
+            statusButton.style.backgroundColor = "white";
+            statusButton.disabled = true;
+            document.getElementById("add-device").disabled = true;
+        }
+        
+        function removeDevice(button, deviceKey) {
+            button.parentElement.remove();
+            addedDevices = addedDevices.filter(d => d !== deviceKey);
+        }
+        
+        function validateForm() {
+            let name = document.getElementById("name").value.trim();
+            let triggerTime = document.getElementById("trigger_time").value;
+            let devices = document.getElementById("added-devices").children.length;
+
+            if (!name || !triggerTime || devices === 0) {
+                alert("Please enter a name, trigger time, and at least one device.");
+                return false;
+            }
+            return true;
         }
     </script>
 </body>

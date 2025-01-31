@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Automation
-from devices.models import Device, Room
+from devices.models import Device, House, Room
+from users.models import Owner
 from django.contrib.auth.decorators import login_required
 import json
 
@@ -12,17 +13,10 @@ def automations_list(request):
 
 @login_required
 def add_automation(request):
-    # Get all rooms and devices
-    rooms = Room.objects.all()
-    devices_by_room = {}
-
-    # Create a dictionary of devices for each room, but convert them to serializable data
-    for room in rooms:
-        devices_by_room[room.room_id] = list(Device.objects.filter(room=room).values('device_id', 'name'))
-
-    print(devices_by_room)
+    house = get_object_or_404(House, house_id=request.user.owner.house_id)
+    rooms = house.rooms.all() 
+    devices_by_room = {room.room_id: list(Device.objects.filter(room=room).values('device_id', 'name')) for room in rooms}
     
-    # Pass the devices_by_room to the template
     devices_by_room_json = json.dumps(devices_by_room)
 
     if request.method == 'POST':
@@ -31,8 +25,8 @@ def add_automation(request):
         devices_on_ids = request.POST.getlist('devices_on')
         devices_off_ids = request.POST.getlist('devices_off')
 
-        devices_on = Device.objects.filter(id__in=devices_on_ids)
-        devices_off = Device.objects.filter(id__in=devices_off_ids)
+        devices_on = Device.objects.filter(device_id__in=devices_on_ids)
+        devices_off = Device.objects.filter(device_id__in=devices_off_ids)
 
         if devices_on or devices_off:
             automation = Automation.objects.create(
@@ -47,6 +41,7 @@ def add_automation(request):
             return redirect('automations_list')
 
     return render(request, 'add_automation.html', {'rooms': rooms, 'devices_by_room_json': devices_by_room_json})
+
 
 @login_required
 def edit_automation(request, automation_id):

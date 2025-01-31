@@ -20,21 +20,21 @@
                 <label for="state_{{ device.device_id }}">Light Color:</label>
                 <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
                     {% for option in device_options|get_item:device.device_id %}
-                        <option value="{{ option }}" {% if option == device.ambiance_mode_device.state %}selected{% endif %}>{{ option }}</option>
+                        <option value="{{ option|as_comma_separated }}" {% if option|as_comma_separated == device.ambiance_mode_device.state %}selected{% endif %}>{{ option|as_comma_separated }}</option>
                     {% endfor %}
                 </select><br>
             {% elif device.general_product_code == 'AF0003' %}
                 <label for="state_{{ device.device_id }}">Diffuser Scent:</label>
                 <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
                     {% for option in device_options|get_item:device.device_id %}
-                        <option value="{{ option }}" {% if option == device.ambiance_mode_device.state %}selected{% endif %}>{{ option }}</option>
+                        <option value="{{ option|as_comma_separated }}" {% if option|as_comma_separated == device.ambiance_mode_device.state %}selected{% endif %}>{{ option|as_comma_separated }}</option>
                     {% endfor %}
                 </select><br>
             {% elif device.general_product_code == 'LF0002' %}
                 <label for="state_{{ device.device_id }}">Speaker Mode:</label>
                 <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
                     {% for option in device_options|get_item:device.device_id %}
-                        <option value="{{ option }}" {% if option == device.ambiance_mode_device.state %}selected{% endif %}>{{ option }}</option>
+                        <option value="{{ option|as_comma_separated }}" {% if option|as_comma_separated == device.ambiance_mode_device.state %}selected{% endif %}>{{ option|as_comma_separated }}</option>
                     {% endfor %}
                 </select><br>
             {% elif device.general_product_code == 'AV0001' %}
