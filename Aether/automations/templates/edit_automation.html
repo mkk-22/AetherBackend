@@ -1,43 +1,266 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Edit Automation</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
-    <body>
-        <h1>Edit Automation</h1>
-        <form method="POST">
-            {% csrf_token %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Automation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <h2>Edit Automation</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-row">
             <label for="name">Automation Name:</label>
-            <input type="text" name="name" value="{{ automation.name }}" required>
-        
+            <input type="text" id="name" name="name" value="{{ automation.name }}" required>
+
             <label for="trigger_time">Trigger Time:</label>
-            <input type="time" id="trigger_time" name="trigger_time" value="{{ automation.trigger_time }}" >
-            <br>
-        
-            <br>
-            <label for="devices_on">Select Devices to Turn ON:</label><br>
-            {% for device in devices %}
-                <input type="checkbox" name="devices_on" value="{{ device.device_id }}" 
-                       {% if device in automation.devices_on.all %}checked{% endif %}> 
-                       {{ device.name }} #{{ device.device_number }} ({{ device.room.name }}) 
-                       <br>
+            <input type="time" id="trigger_time" name="trigger_time" value="{{ automation.trigger_time }}" required>
+        </div>
+
+        <div class="form-row">
+            <!-- Room Dropdown -->
+            <label for="room">Select Room:</label>
+            <select id="room" name="room" onchange="updateDevices()" required>
+                <option value="">Select a room</option>
+                {% for room in rooms %}
+                    <option value="{{ room.room_id }}" data-room="{{ room.room_id }}" {% if room.room_id == automation.room_id %}selected{% endif %}>{{ room.name }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Device Dropdown -->
+            <label for="device">Select Device:</label>
+            <select id="device" name="device" disabled>
+                <option value="">Select a device</option>
+            </select>
+
+            <!-- On/Off Button -->
+            <button type="button" id="status-toggle" disabled onclick="toggleDeviceStatus()">On/Off</button>
+
+            <!-- Add Device Button -->
+            <button type="button" id="add-device" disabled onclick="addDevice()">+ Add Device</button>
+        </div>
+
+        <div id="added-devices">
+            <h3>Current Devices:</h3>
+            <!-- Added devices will be listed here -->
+            {% for device in automation.devices %}
+                <div class="added-device">
+                    {{ device.name }} ({{ device.room.name }}) | Status: <strong>{{ device.status }}</strong>
+                    <input type="hidden" name="rooms[]" value="{{ device.room.room_id }}">
+                    <input type="hidden" name="devices[]" value="{{ device.device_id }}">
+                    <input type="hidden" name="statuses[]" value="{{ device.status }}">
+                    <button type="button" onclick="removeDevice(this, '{{ device.device_id }}', '{{ device.room.room_id }}')">Remove</button>
+                </div>
             {% endfor %}
-            
-            <br>
-            <label for="devices_off">Select Devices to Turn OFF:</label><br>
-            {% for device in devices %}
-                <input type="checkbox" name="devices_off" value="{{ device.device_id }}" 
-                       {% if device in automation.devices_off.all %}checked{% endif %}> 
-                       {{ device.name }} #{{ device.device_number }} ({{ device.room.name }}) 
-                       <br>
-            {% endfor %}
-            
-            <button type="submit">Save Automation</button>
-        </form>
-        
-        <p><a href="{% url 'automations_list' %}">Back to Automations</a></p>
-    </body>
+        </div>
+
+        <input type="hidden" name="devices_on" id="devices_on">
+        <input type="hidden" name="devices_off" id="devices_off">
+
+        <button type="submit">Save Automation</button>
+    </form>
+
+    <script>
+        let addedDevices = []; // To keep track of added devices
+        let availableDevices = {}; // To track available devices per room
+
+        // Preload the current added devices
+        {% for device in automation.devices %}
+            addedDevices.push({
+                deviceId: "{{ device.device_id }}",
+                roomId: "{{ device.room.room_id }}",
+                currentStatus: "{{ device.status }}"
+            });
+        {% endfor %}
+
+        function updateDevices() {
+            let roomSelect = document.getElementById("room");
+            let deviceSelect = document.getElementById("device");
+            let statusButton = document.getElementById("status-toggle");
+
+            let roomId = roomSelect.value;
+
+            if (roomId) {
+                // Enable device dropdown
+                deviceSelect.disabled = false;
+
+                // Get devices by room from the backend JSON
+                let devicesByRoom = {{ devices_by_room_json|safe }};
+                let devices = devicesByRoom[roomId];
+
+                // Clear previous options
+                deviceSelect.innerHTML = '<option value="">Select a device</option>';
+
+                availableDevices[roomId] = []; // Reset available devices for this room
+
+                // Populate the device dropdown with available devices
+                devices.forEach(device => {
+                    // Check if device is already added
+                    if (!addedDevices.find(addedDevice => addedDevice.deviceId === device.device_id)) {
+                        let option = document.createElement("option");
+                        option.value = device.device_id;
+                        option.textContent = device.name;
+                        deviceSelect.appendChild(option);
+                        availableDevices[roomId].push(device.device_id);
+                    }
+                });
+
+                // Disable rooms with no available devices
+                disableEmptyRooms();
+
+                // Enable status button
+                statusButton.disabled = false;
+            } else {
+                // Disable device dropdown if no room selected
+                deviceSelect.disabled = true;
+                statusButton.disabled = true;
+            }
+        }
+
+        function toggleDeviceStatus() {
+            let statusButton = document.getElementById("status-toggle");
+
+            // Toggle status button text
+            if (statusButton.textContent === "On/Off") {
+                statusButton.textContent = "Off";
+                statusButton.style.backgroundColor = "red";
+            } else {
+                statusButton.textContent = "On";
+                statusButton.style.backgroundColor = "green";
+            }
+
+            let addButton = document.getElementById("add-device");
+            addButton.disabled = false;
+        }
+
+        function addDevice() {
+            let roomSelect = document.getElementById("room");
+            let deviceSelect = document.getElementById("device");
+            let statusButton = document.getElementById("status-toggle");
+
+            let roomId = roomSelect.value;
+            let roomName = roomSelect.options[roomSelect.selectedIndex].text;
+            let deviceId = deviceSelect.value;
+            let deviceName = deviceSelect.options[deviceSelect.selectedIndex].text;
+            let currentStatus = statusButton.textContent.toLowerCase(); // Get current status
+
+            if (!roomId || !deviceId) return;
+
+            // Add device to added devices array
+            addedDevices.push({ deviceId, roomId, currentStatus });
+
+            // Create new div for added device
+            let div = document.createElement("div");
+            div.className = "added-device";
+            div.innerHTML = `
+                ${deviceName} (${roomName}) | Status: <strong>${currentStatus}</strong>
+                <input type="hidden" name="rooms[]" value="${roomId}">
+                <input type="hidden" name="devices[]" value="${deviceId}">
+                <input type="hidden" name="statuses[]" value="${currentStatus}">
+                <button type="button" onclick="removeDevice(this, '${deviceId}', '${roomId}')">Remove</button>
+            `;
+            document.getElementById("added-devices").appendChild(div);
+
+            // Update hidden fields for devices_on and devices_off
+            updateDeviceFields();
+
+            // Reset dropdowns and buttons
+            deviceSelect.value = "";
+            statusButton.textContent = "On/Off";
+            statusButton.style.backgroundColor = "white";
+            statusButton.disabled = true;
+
+            // Disable the added device
+            disableAddedDevice(deviceId);
+
+            // Update available devices after adding a device
+            updateDevices();
+        }
+
+        function removeDevice(button, deviceId, roomId) {
+            let index = addedDevices.findIndex(device => device.deviceId === deviceId && device.roomId === roomId);
+            if (index !== -1) {
+                addedDevices.splice(index, 1);
+            }
+            button.parentElement.remove();
+
+            // Enable device dropdown after removal
+            enableDevice(deviceId);
+
+            // Update hidden fields after removal
+            updateDeviceFields();
+
+            // Re-enable the room if it has available devices again
+            updateDevices();
+        }
+
+        function updateDeviceFields() {
+            // Create lists for devices on and off
+            let devicesOnField = document.getElementById("devices_on");
+            let devicesOffField = document.getElementById("devices_off");
+
+            let devicesOn = [];
+            let devicesOff = [];
+
+            // Loop through added devices and add to the corresponding lists
+            let addedDeviceElements = document.querySelectorAll('#added-devices .added-device');
+            addedDeviceElements.forEach(function (deviceElement) {
+                let status = deviceElement.querySelector('strong').textContent.toLowerCase();
+                let deviceId = deviceElement.querySelector('input[name="devices[]"]').value;
+
+                if (status === 'on') {
+                    devicesOn.push(deviceId);
+                } else {
+                    devicesOff.push(deviceId);
+                }
+            });
+
+            // Update hidden fields with the devices' IDs
+            devicesOnField.value = devicesOn.join(',');
+            devicesOffField.value = devicesOff.join(',');
+        }
+
+        function disableAddedDevice(deviceId) {
+            let deviceSelect = document.getElementById("device");
+            let options = deviceSelect.getElementsByTagName("option");
+
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === deviceId) {
+                    options[i].disabled = true;
+                }
+            }
+        }
+
+        function enableDevice(deviceId) {
+            let deviceSelect = document.getElementById("device");
+            let options = deviceSelect.getElementsByTagName("option");
+
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === deviceId) {
+                    options[i].disabled = false;
+                }
+            }
+        }
+
+        function disableEmptyRooms() {
+            let roomSelect = document.getElementById("room");
+            let roomOptions = roomSelect.getElementsByTagName("option");
+
+            for (let i = 1; i < roomOptions.length; i++) { // Start from index 1 to skip the "Select a room" option
+                let roomId = roomOptions[i].value;
+
+                if (!availableDevices[roomId] || availableDevices[roomId].length === 0) {
+                    roomOptions[i].disabled = true;
+                } else {
+                    roomOptions[i].disabled = false;
+                }
+            }
+        }
+    </script>
+
+</body>
 </html>
