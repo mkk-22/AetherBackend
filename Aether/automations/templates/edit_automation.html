@@ -27,7 +27,7 @@
             <select id="room" name="room" onchange="updateDevices()" required>
                 <option value="">Select a room</option>
                 {% for room in rooms %}
-                    <option value="{{ room.room_id }}" data-room="{{ room.room_id }}" {% if room.room_id == automation.room_id %}selected{% endif %}>{{ room.name }}</option>
+                    <option value="{{ room.room_id }}" data-room="{{ room.room_id }}" {% if room.room_id == selected_room_id %}selected{% endif %}>{{ room.name }}</option>
                 {% endfor %}
             </select>
 
@@ -45,21 +45,26 @@
         </div>
 
         <div id="added-devices">
-            <h3>Current Devices:</h3>
             <!-- Added devices will be listed here -->
-            {% for device in automation.devices %}
+            {% for device in devices_on %}
                 <div class="added-device">
                     {{ device.name }} ({{ device.room.name }}) | Status: <strong>{{ device.status }}</strong>
-                    <input type="hidden" name="rooms[]" value="{{ device.room.room_id }}">
+                    <input type="hidden" name="rooms[]" value="{{ room.room_id }}">
                     <input type="hidden" name="devices[]" value="{{ device.device_id }}">
                     <input type="hidden" name="statuses[]" value="{{ device.status }}">
-                    <button type="button" onclick="removeDevice(this, '{{ device.device_id }}', '{{ device.room.room_id }}')">Remove</button>
+                    <button type="button" onclick="removeDevice(this, '{{ device.device_id }}', '{{ device.room.room_id }} ')">Remove</button>
+                </div>
+            {% endfor %}
+            {% for device in devices_off %}
+                <div class="added-device">
+                    {{ device.name }} ({{ device.room.name }}) | Status: <strong>{{ device.status }}</strong>
+                    <input type="hidden" name="rooms[]" value="{{ room.room_id }}">
+                    <input type="hidden" name="devices[]" value="{{ device.device_id }}">
+                    <input type="hidden" name="statuses[]" value="{{ device.status }}">
+                    <button type="button" onclick="removeDevice(this, '{{ device.device_id }}', '{{ device.room.room_id }} ')">Remove</button>
                 </div>
             {% endfor %}
         </div>
-
-        <input type="hidden" name="devices_on" id="devices_on">
-        <input type="hidden" name="devices_off" id="devices_off">
 
         <button type="submit">Save Automation</button>
     </form>
@@ -68,13 +73,12 @@
         let addedDevices = []; // To keep track of added devices
         let availableDevices = {}; // To track available devices per room
 
-        // Preload the current added devices
-        {% for device in automation.devices %}
-            addedDevices.push({
-                deviceId: "{{ device.device_id }}",
-                roomId: "{{ device.room.room_id }}",
-                currentStatus: "{{ device.status }}"
-            });
+        // Fill in pre-existing devices on page load
+        {% for device in devices_on %}
+            addedDevices.push({ deviceId: '{{ device.device_id }}', roomId: '{{ device.room.room_id }}', currentStatus: 'on' });
+        {% endfor %}
+        {% for device in devices_off %}
+            addedDevices.push({ deviceId: '{{ device.device_id }}', roomId: '{{ device.room.room_id }}', currentStatus: 'off' });
         {% endfor %}
 
         function updateDevices() {
@@ -108,9 +112,6 @@
                         availableDevices[roomId].push(device.device_id);
                     }
                 });
-
-                // Disable rooms with no available devices
-                disableEmptyRooms();
 
                 // Enable status button
                 statusButton.disabled = false;
@@ -176,9 +177,6 @@
 
             // Disable the added device
             disableAddedDevice(deviceId);
-
-            // Update available devices after adding a device
-            updateDevices();
         }
 
         function removeDevice(button, deviceId, roomId) {
@@ -193,9 +191,6 @@
 
             // Update hidden fields after removal
             updateDeviceFields();
-
-            // Re-enable the room if it has available devices again
-            updateDevices();
         }
 
         function updateDeviceFields() {
@@ -242,21 +237,6 @@
             for (let i = 0; i < options.length; i++) {
                 if (options[i].value === deviceId) {
                     options[i].disabled = false;
-                }
-            }
-        }
-
-        function disableEmptyRooms() {
-            let roomSelect = document.getElementById("room");
-            let roomOptions = roomSelect.getElementsByTagName("option");
-
-            for (let i = 1; i < roomOptions.length; i++) { // Start from index 1 to skip the "Select a room" option
-                let roomId = roomOptions[i].value;
-
-                if (!availableDevices[roomId] || availableDevices[roomId].length === 0) {
-                    roomOptions[i].disabled = true;
-                } else {
-                    roomOptions[i].disabled = false;
                 }
             }
         }

@@ -1,8 +1,6 @@
-from datetime import timezone
 from pyexpat.errors import messages
 import random
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Owner, User, Guest
@@ -223,3 +221,33 @@ def password_reset_view(request):
             return render(request, "password_reset.html", {"error": "Email not found."})
     
     return render(request, "password_reset.html")
+
+@login_required
+def account(request):
+    if request.method == "POST":
+        user = request.user
+        user.first_name = request.POST.get("first_name", user.first_name)
+        user.last_name = request.POST.get("last_name", user.last_name)
+        user.email = request.POST.get("email", user.email)
+        user.save()
+        return redirect("account")  
+
+    return render(request, "account.html")
+
+
+@login_required
+def delete_account(request):
+    if request.method == "POST":
+        user = request.user
+        user.delete()  
+        logout(request) 
+        return redirect("start")  
+
+    return render(request, "delete_account.html")
+
+
+def contact_support(request):
+    if request.method == "POST":
+        return render(request, "contact_support.html", {"success": "We will get back to you within 24 hours, so keep an eye on your email inbox!"})
+    
+    return render(request, "contact_support.html")
