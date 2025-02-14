@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AutomationsConfig(AppConfig):
+class VirtualenvConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'automations'
+    name = 'virtualenv'

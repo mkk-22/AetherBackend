@@ -129,5 +129,26 @@
         "general_product_code": "MM0002",
         "average_energy_consumption_per_hour": 0.0025,
         "manufacturer": "Aether"
+    },
+
+    {
+        "name": "Temperature Sensor",
+        "general_product_code": "MM0003",
+        "average_energy_consumption_per_hour": 0.0025,
+        "manufacturer": "Aether"
+    },
+
+    {
+        "name": "Humidity Sensor",
+        "general_product_code": "MM0004",
+        "average_energy_consumption_per_hour": 0.0025,
+        "manufacturer": "Aether"
+    },
+    
+    {
+        "name": "Light Intensity Sensor",
+        "general_product_code": "MM0005",
+        "average_energy_consumption_per_hour": 0.0025,
+        "manufacturer": "Aether"
     }
 ]

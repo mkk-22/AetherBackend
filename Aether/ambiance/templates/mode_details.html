@@ -14,13 +14,13 @@
         {% if mode.devices.exists %}
             {% for mode_device in mode.devices.all %}
                 <li>
-                    <strong>{{ mode_device.device.name }}</strong> (Room: {{ mode_device.device.room.name }})<br>
+                    <strong>{{ mode_device.device.name }}</strong> <br>
                     {% if mode_device.device.general_product_code == 'AF0005' %}
-                        Light Color: {{ mode_device.state }}<br>
+                       {{ mode_device.state }}<br>
                     {% elif mode_device.device.general_product_code == 'AF0003' %}
-                        Diffuser Scent: {{ mode_device.state }}<br>
+                       {{ mode_device.state }}<br>
                     {% elif mode_device.device.general_product_code == 'LF0002' %}
-                        Speaker Mode: {{ mode_device.state }}<br>
+                       {{ mode_device.state }}<br>
                     {% elif mode_device.device.general_product_code == 'AV0001' %}
                         Temperature: {{ mode_device.state }}°C<br>
                     {% endif %}
@@ -31,13 +31,15 @@
         {% endif %}
     </ul>
 
-    <p>
-        <a href="{% url 'edit_ambiance_mode' mode.id %}">Edit Mode</a> | 
+        <form action="{% url 'edit_ambiance_mode' mode.id %}" method="get" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Edit Mode</button>
+        </form>
+        <br>
         <form action="{% url 'delete_ambiance_mode' mode.id %}" method="post" style="display:inline;">
             {% csrf_token %}
             <button type="submit">Delete Mode</button>
         </form>
-    </p>
 
     <p><a href="{% url 'modes_list' %}">Back to Modes</a></p>
 </body>

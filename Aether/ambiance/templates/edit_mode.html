@@ -9,42 +9,41 @@
 <body>
     <h1>Edit Mode: {{ mode.name }}</h1>
 
-        <form method="post">
-            {% csrf_token %}
-            
-            {% for device in devices %}
-        <div>
-            <h3>{{ device.name }} #{{ device.device_number }}</h3>
-
-            {% if device.general_product_code == 'AF0005' %}
-                <label for="state_{{ device.device_id }}">Light Color:</label>
-                <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
-                    {% for option in device_options|get_item:device.device_id %}
-                        <option value="{{ option|as_comma_separated }}" {% if option|as_comma_separated == device.ambiance_mode_device.state %}selected{% endif %}>{{ option|as_comma_separated }}</option>
-                    {% endfor %}
-                </select><br>
-            {% elif device.general_product_code == 'AF0003' %}
-                <label for="state_{{ device.device_id }}">Diffuser Scent:</label>
-                <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
-                    {% for option in device_options|get_item:device.device_id %}
-                        <option value="{{ option|as_comma_separated }}" {% if option|as_comma_separated == device.ambiance_mode_device.state %}selected{% endif %}>{{ option|as_comma_separated }}</option>
-                    {% endfor %}
-                </select><br>
-            {% elif device.general_product_code == 'LF0002' %}
-                <label for="state_{{ device.device_id }}">Speaker Mode:</label>
-                <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
-                    {% for option in device_options|get_item:device.device_id %}
-                        <option value="{{ option|as_comma_separated }}" {% if option|as_comma_separated == device.ambiance_mode_device.state %}selected{% endif %}>{{ option|as_comma_separated }}</option>
-                    {% endfor %}
-                </select><br>
-            {% elif device.general_product_code == 'AV0001' %}
-                <!-- Thermostat does not need options, so no dropdown for it -->
-                <label for="state_{{ device.device_id }}">Thermostat Temperature:</label>
-                <input type="number" name="state_{{ device.device_id }}" id="state_{{ device.device_id }}" value="{{ device.ambiance_mode_device.state }}">
-            {% endif %}
-        </div>
-    {% endfor %}
-
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for device in devices %}
+            <div>
+                <h3>{{ device.name }} #{{ device.device_number }}</h3>
+                {% with existing_states|get_item:device.device_id as selected_state %}
+                    {% if device.general_product_code == 'AF0005' %}
+                        <label for="state_{{ device.device_id }}">Light Color:</label>
+                        <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
+                            {% for option in device_options|get_item:device.device_id %}
+                                <option value="{{ option }}" {% if option == selected_state %}selected{% endif %}>{{ option }}</option>
+                            {% endfor %}
+                        </select><br>
+                    {% elif device.general_product_code == 'AF0003' %}
+                        <label for="state_{{ device.device_id }}">Diffuser Scent:</label>
+                        <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
+                            {% for option in device_options|get_item:device.device_id %}
+                                <option value="{{ option }}" {% if option == selected_state %}selected{% endif %}>{{ option }}</option>
+                            {% endfor %}
+                        </select><br>
+                    {% elif device.general_product_code == 'LF0002' %}
+                        <label for="state_{{ device.device_id }}">Speaker Mode:</label>
+                        <select name="state_{{ device.device_id }}" id="state_{{ device.device_id }}">
+                            {% for option in device_options|get_item:device.device_id %}
+                                <option value="{{ option }}" {% if option == selected_state %}selected{% endif %}>{{ option }}</option>
+                            {% endfor %}
+                        </select><br>
+                    {% elif device.general_product_code == 'AV0001' %}
+                        <label for="state_{{ device.device_id }}">Thermostat Temperature:</label>
+                        <input type="number" name="state_{{ device.device_id }}" id="state_{{ device.device_id }}" value="{{ selected_state }}">
+                    {% endif %}
+                {% endwith %}
+            </div>
+        {% endfor %}
 
         <button type="submit">Save Changes</button>
     </form>

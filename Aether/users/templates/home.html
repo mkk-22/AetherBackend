@@ -9,9 +9,9 @@
     <h1>Welcome, {{ request.user.first_name }}</h1>
 
     <p><a href="{% url 'roomsanddevices' %}"> Go to Rooms and Devices </a></p>
-    <p><a href="{% url 'automations_list' %}"> View Automations </a></p>
-    <p><a href="{% url 'modes_list' %}"> View Ambiance Modes </a></p>
     <p><a href="{% url 'energy_home' %}"> Energy Stats </a></p>
+    <p><a href="{% url 'modes_list' %}"> View Ambiance Modes </a></p>
+    <p><a href="{% url 'automations_list' %}"> View Routines </a></p>
     <a href="{% url 'my_guests' %}">My Guests</a>
     <p><a href="{% url 'settings' %}"> Settings </a></p>
 

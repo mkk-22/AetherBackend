@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User 
 from users.models import Owner
+from devices.models import Device
 
 
 class EnergyGoal(models.Model):
@@ -10,11 +10,20 @@ class EnergyGoal(models.Model):
     def __str__(self):
         return f"{self.homeowner.user.first_name}'s Energy Goal: {self.goal} kWh"
 
-class EnergyUsage(models.Model):
+class UserEnergyUsage(models.Model):
     homeowner = models.ForeignKey(Owner, on_delete=models.CASCADE, related_name='energy_usages')
     creation_timestamp = models.DateTimeField()
     total_consumption = models.DecimalField(max_digits=10, decimal_places=2) 
-    period = models.CharField(max_length=10, choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly'), ('yearly', 'Yearly')])
+    period = models.CharField(max_length=10, choices=[('hourly', 'Hourly'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly'), ('yearly', 'Yearly')])
+
+    def __str__(self):
+        return f"{self.homeowner.user.first_name}'s {self.period.capitalize()} Energy Usage: {self.total_consumption} kWh"
+
+class DeviceEnergyUsage(models.Model):
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='energy_usages')
+    creation_timestamp = models.DateTimeField()
+    total_consumption = models.DecimalField(max_digits=10, decimal_places=2) 
+    period = models.CharField(max_length=10, choices=[('hourly', 'Hourly'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly'), ('yearly', 'Yearly')])
 
     def __str__(self):
         return f"{self.homeowner.user.first_name}'s {self.period.capitalize()} Energy Usage: {self.total_consumption} kWh"

@@ -8,36 +8,32 @@
 </head>
 <body>
     <h1>Ambiance Modes</h1>
-
+    <button type="submit"><a href="{% url 'add_ambiance_mode'  %}">Add Mode</a></button>   
     <ul>
         {% for room in rooms %}
-            <h2>{{ room.name }}</h2>
             <ul>
                 {% for mode in room.modes.all %}
                     <li>
-                        <strong>{{ mode.name }}</strong> ({{ mode.room.name }})
+                        <strong>{{ mode.name }}</strong>
                         <form action="{% url 'toggle_ambiance' mode.id %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit">
                                 {% if mode.status == 'on' %}Turn Off{% else %}Turn On{% endif %}
                             </button>
                         </form>
-                        <a href="{% url 'mode_details' mode.id %}">Details</a> | 
-                        <form action="{% url 'delete_ambiance_mode' mode.id %}" method="post" style="display:inline;">
+                        <form action="{% url 'mode_details' mode.id %}" method="post" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit">Delete</button>
+                            <button type="submit">Details</button>
                         </form>
                     </li>
                 {% empty %}
-                    <li>No modes available.</li>
-                {% endfor %}
+                {% endfor %}         
             </ul>
         {% empty %}
             <p>No rooms available in this house.</p>
         {% endfor %}
     </ul>
 
-    <p><a href="{% url 'add_ambiance_mode'  %}">Add Mode</a></p>
     <p><a href="{% url 'home' %}">Back to Home</a></p>
 </body>
 </html>

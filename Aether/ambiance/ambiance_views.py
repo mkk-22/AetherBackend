@@ -9,22 +9,24 @@ from devices.models import House, Room, Device, FixedOptionDevice, VariableOptio
 def modes_list(request):
     house = get_object_or_404(House, house_id=request.user.owner.house_id)
     rooms = house.rooms.all()  
+    rooms = Room.objects.filter(house=house, devices__general_product_code__in=['AF0005', 'AF0003', 'LF0002', 'AV0001']).distinct()
 
     return render(request, 'modes_list.html', {'house': house, 'rooms': rooms})
 
 def add_ambiance_mode(request):
     house = get_object_or_404(House, house_id=request.user.owner.house_id)
-    rooms = house.rooms.all()  
+    rooms = Room.objects.filter(house=house, devices__general_product_code__in=['AF0005', 'AF0003', 'LF0002', 'AV0001']).distinct() 
 
     if request.method == 'POST':
         name = request.POST.get('name')
         room_id = request.POST.get('room')  
-        room = get_object_or_404(Room, id=room_id) 
+        room = get_object_or_404(Room, room_id=room_id) 
 
-        AmbianceMode.objects.create(room=room, name=name)
-        return redirect('modes_list')
+        mode = AmbianceMode.objects.create(room=room, name=name)
+        return redirect('edit_ambiance_mode', mode_id=mode.id) 
 
     return render(request, 'add_mode.html', {'house': house, 'rooms': rooms})
+
 
 def edit_ambiance_mode(request, mode_id):
     mode = get_object_or_404(AmbianceMode, id=mode_id)
@@ -32,41 +34,46 @@ def edit_ambiance_mode(request, mode_id):
         general_product_code__in=['AF0005', 'AF0003', 'LF0002', 'AV0001']
     )
 
-    # Create a dictionary for device options
-    device_options = {}
+    # Fetch existing device states for this ambiance mode
+    existing_states = {
+        amd.device.device_id: amd.state for amd in AmbianceModeDevice.objects.filter(mode=mode)
+    }
+    print(existing_states)
 
-    # Populate the device options based on each device
-    for device in devices:
-        if device.general_product_code == 'AF0005':  
-            device_options[device.device_id] = ["red", "gold", "white", "green", "blue", "violet"]
-        elif device.general_product_code == 'AF0003':  
-            device_options[device.device_id] = ["clean", "sandalwood", "rose", "ocean", "cookie", "eucalyptus", "lemongrass"]
-        elif device.general_product_code == 'LF0002':  
-            device_options[device.device_id] = ["idle", "pop", "jazz", "classical", "nature sounds", "white noise"]
-        elif device.general_product_code == 'AV0001':  
-            device_options[device.device_id] = ['16', '24', '27', '32'] 
+    # Define options for each device type
+    device_options = {
+        'AF0005': ["red", "gold", "white", "green", "blue", "violet"],
+        'AF0003': ["clean", "sandalwood", "rose", "ocean", "cookie", "eucalyptus", "lemongrass"],
+        'LF0002': ["idle", "pop", "jazz", "classical", "nature sounds", "white noise"],
+        'AV0001': ['16', '24', '27', '32']
+    }
 
     if request.method == 'POST':
-        # Delete existing ambiance mode devices to ensure only the new ones are saved
+        # Clear existing device states for this mode
         AmbianceModeDevice.objects.filter(mode=mode).delete()
 
-        # Iterate through devices and save new states based on the form submission
+        # Save new states
         for device in devices:
             device_id = device.device_id
-            state = request.POST.get(f'state_{device_id}', '')  # Get the state from the form
+            state = request.POST.get(f'state_{device_id}', '')  # Get from form
 
-            if state:  # Only create an ambiance mode device if a state is selected
+            if state:  # Only save if a state is selected
                 AmbianceModeDevice.objects.create(
                     mode=mode,
                     device=device,
                     state=state,
-                    prev_state = ' ',
-                    prev_status = device.status
+                    prev_state=existing_states.get(device_id, ''),  # Save previous state
+                    prev_status=device.status
                 )
 
-        return redirect('modes_list')  
+        return redirect('mode_details', mode_id=mode.id)
 
-    return render(request, 'edit_mode.html', {'mode': mode, 'devices': devices, 'device_options': device_options})
+    return render(request, 'edit_mode.html', {
+        'mode': mode,
+        'devices': devices,
+        'device_options': {device.device_id: device_options.get(device.general_product_code, []) for device in devices},
+        'existing_states': existing_states  # Pass previous states to template
+    })
 
 
 def mode_details(request, mode_id):
