@@ -4,9 +4,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Owner, User, Guest
-from devices.models import House, Room
+from devices.models import House, Room, MonitorFixedDevice, MonitorVariableDevice
 from .forms import LoginForm, OwnerSignupForm, GuestLoginForm
-
 
 
 def start(request):
@@ -109,6 +108,15 @@ def guest_login(request):
 
 @login_required
 def home(request):
+    # Get latest device states (updated by SimPy)
+    updated_device_states = {
+        device.device_id: device.state
+        for device in MonitorFixedDevice.objects.all()
+    }
+    updated_device_states.update({
+        device.device_id: device.state
+        for device in MonitorVariableDevice.objects.all()
+    })
     return render(request, 'home.html')
     
 @login_required

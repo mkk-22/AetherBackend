@@ -42,9 +42,32 @@ class Device(models.Model):
             return 'Fixed'
         elif product_type == 'V':  
             return 'Variable'
-        elif product_type == 'M':  
-            return 'Monitor'
+        elif product_type == 'Y':  
+            return 'MonitorFixed'
+        elif product_type == 'Z':  
+            return 'MonitorVariable'
         return 'Unknown'
+    
+    def get_state(self):
+        device_type = self.get_device_type()
+
+        if device_type == 'Fixed':
+            fixed_device = self.fixed_device.first()
+            if fixed_device:
+                return fixed_device.state
+        elif device_type == 'Variable':
+            variable_device = self.variable_device.first()
+            if variable_device:
+                return variable_device.state
+        elif device_type == 'MonitorFixed':
+            monitorfixed_device = self.monitorfixed_device.first()
+            if monitorfixed_device:
+                return monitorfixed_device.state
+        elif device_type == 'MonitorVariable':
+            monitorvariable_device = self.monitorvariable_device.first()
+            if monitorvariable_device:
+                return monitorvariable_device.state
+        return None  # In case no state is found
 
 
 class FixedOptionDevice(models.Model):
@@ -62,13 +85,19 @@ class VariableOptionDevice(models.Model):
     def __str__(self):
         return f"Variable Option Device => {self.device.name} (state: {self.state})"
 
-
-class MonitorDevice(models.Model):
-    device = models.ForeignKey(Device, related_name='monitor_device', on_delete=models.CASCADE)
+class MonitorFixedDevice(models.Model):
+    device = models.ForeignKey(Device, related_name='monitorfixed_device', on_delete=models.CASCADE)
     options = models.CharField(max_length=50, choices=[], default='')
     state = models.CharField(max_length=50, default='')
 
     def __str__(self):
-        return f"Monitor Device => {self.device.name} (state: {self.state})"
+        return f"Monitor Fixed Device => {self.device.name} (state: {self.state})"
+
+class MonitorVariableDevice(models.Model):
+    device = models.ForeignKey(Device, related_name='monitorvariable_device', on_delete=models.CASCADE)
+    state = models.IntegerField(default=25)
+
+    def __str__(self):
+        return f"Monitor Variable Device => {self.device.name} (state: {self.state})"
 
         

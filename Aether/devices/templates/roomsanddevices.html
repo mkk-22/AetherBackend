@@ -49,9 +49,11 @@
                                             </select>
                                             <button type="submit">Save</button>
                                         </form>
-                                       {% elif device.get_device_type == 'Monitor' %}
-                                            <strong>Current State:</strong> {{ device.monitor_device.first.state |as_comma_separated}}
-                                        {% elif device.get_device_type == 'Variable' %}
+                                    {% elif device.get_device_type == 'MonitorFixed' %}
+                                        <strong>Current State:</strong> {{ device.monitorfixed_device.first.state |as_comma_separated}}
+                                    {% elif device.get_device_type == 'MonitorVariable' %}
+                                        <strong>Current State:</strong> {{ device.monitorvariable_device.first.state |as_comma_separated}}
+                                    {% elif device.get_device_type == 'Variable' %}
                                         <form action="{% url 'update_device_state' device.device_id %}" method="post">
                                             {% csrf_token %}
                                             <label for="variable_state"></label>
@@ -89,5 +91,12 @@
     {% endif %}
 
     <p><a href="{% url 'home' %}">Back to Home</a></p>
+
+    <script>
+        setInterval(function() {
+            location.reload();
+        }, 15000);  
+    </script>
+    
 </body>
 </html>

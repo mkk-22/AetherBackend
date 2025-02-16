@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'devices',
     'energy',
     'ambiance',
-    'automation'
+    'automation',
+    'virtualenv',
+    'notifs'
 ]
 
 MIDDLEWARE = [

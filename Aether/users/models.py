@@ -6,6 +6,9 @@ class Owner(models.Model):
     plan_type = models.CharField(max_length=8, default="Home")
     house_id = models.BigIntegerField(default=0)
     
+    def __str__(self):
+        return f"Owner: {self.user.first_name} {self.user.last_name if self.user else ''}"
+    
 class Guest(models.Model):
     owner = models.ForeignKey('users.Owner', on_delete=models.CASCADE)  # Use string references for avoiding circular imports
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -15,7 +18,7 @@ class Guest(models.Model):
     departure_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f"Guest: {self.user.first_name} {self.user.last_name if self.user else ''}"
+        return f"Guest of {self.owner.user.first_name}: {self.user.first_name} {self.user.last_name if self.user else ''}"
 
 
 

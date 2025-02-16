@@ -1,7 +1,6 @@
 from pathlib import Path
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import House, Room, Device, FixedOptionDevice, VariableOptionDevice, MonitorDevice
-from users.models import Owner
+from .models import House, Room, Device, FixedOptionDevice, VariableOptionDevice, MonitorFixedDevice, MonitorVariableDevice
 from energy.models import IntervalReading
 from django.contrib.auth.decorators import login_required
 from users.user_views import generate_unique_code
@@ -10,6 +9,8 @@ import json
 from django.http import JsonResponse
 from django.utils.timezone import now
 from decimal import Decimal
+from simulation.tasks import run_simulation
+
 
 @login_required
 def roomsanddevices(request):
@@ -31,11 +32,17 @@ def roomsanddevices(request):
                     device_options[device.device_id] = fixed_device.options.split(", ")
                     updated_device_states[device.device_id] = fixed_device.state
 
-            elif device.get_device_type() == 'Monitor':
-                monitor_device = device.monitor_device.first()
-                if monitor_device:
-                    device_options[device.device_id] = monitor_device.options.split(", ")
-                    updated_device_states[device.device_id] = monitor_device.state
+            elif device.get_device_type() == 'MonitorFixed':
+                monitorfixed_device = device.monitorfixed_device.first()
+                if monitorfixed_device:
+                    device_options[device.device_id] = monitorfixed_device.options.split(", ")
+                    updated_device_states[device.device_id] = monitorfixed_device.state
+                    
+            elif device.get_device_type() == 'MonitorVariable':
+                monitorvariable_device = device.monitorvariable_device.first()
+                if monitorvariable_device:
+                    device_options[device.device_id] = ['State (0-100)']
+                    updated_device_states[device.device_id] = monitorvariable_device.state
 
             elif device.get_device_type() == 'Variable':
                 variable_device = device.variable_device.first()
@@ -59,12 +66,24 @@ def roomsanddevices(request):
             device.save()
 
     print(updated_device_states)
+    
+    # Get latest device states (updated by SimPy)
+    updated_device_states = {
+        device.device_id: device.state
+        for device in MonitorFixedDevice.objects.all()
+    }
+    updated_device_states.update({
+        device.device_id: device.state
+        for device in MonitorVariableDevice.objects.all()
+    })
+    
     return render(request, 'roomsanddevices.html', {
         'house': house,
         'rooms': rooms,
         'device_options': device_options,
         'updated_device_states': updated_device_states  
     })
+
 
 def generate_unique_room_id():
     return get_random_string(8)  
@@ -146,12 +165,17 @@ def add_device(request, room_id):
                 device=device,
                 state=25
             )
-        elif device_type == 'Monitor':
+        elif device_type == 'MonitorFixed':
             options = device_data.get('options', ['default'])  
-            MonitorDevice.objects.create(
+            MonitorFixedDevice.objects.create(
                 device=device,
                 options=options,
                 state= options[0]  
+            )
+        elif device_type == 'MonitorVariable':
+            MonitorVariableDevice.objects.create(
+                device=device,
+                state=25 
             )
             
         return redirect('roomsanddevices')
@@ -213,14 +237,6 @@ def update_device_state(request, device_id):
                 fixed_device.state = selected_option
                 fixed_device.save()
 
-        elif device.get_device_type() == 'Monitor':
-            selected_option = request.POST.get('monitor_option')
-
-            monitor_device = get_object_or_404(MonitorDevice, device=device)
-            if monitor_device:
-                monitor_device.state = selected_option
-                monitor_device.save()
-
         elif device.get_device_type() == 'Variable':
             state_value = request.POST.get('variable_state')
             try:
@@ -244,8 +260,10 @@ def device_info(request, device_id):
         state = get_object_or_404(FixedOptionDevice, device=device).state
     elif device_type == 'Variable':
         state = get_object_or_404(VariableOptionDevice, device=device).state
-    elif device_type == 'Monitor':
-        state = get_object_or_404(MonitorDevice, device=device).state
+    elif device_type == 'MonitorFixed':
+        state = get_object_or_404(MonitorFixedDevice, device=device).state
+    elif device_type == 'MonitorVariable':
+        state = get_object_or_404(MonitorVariableDevice, device=device).state
     else:
         pass
 

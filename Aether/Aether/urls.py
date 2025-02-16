@@ -21,6 +21,7 @@ from devices import device_views
 from energy import energy_views
 from ambiance import ambiance_views
 from automation import automation_views
+from notifs import notifs_views
 
 
 
@@ -76,6 +77,8 @@ urlpatterns = [
     path('edit_automation/<int:automation_id>/', automation_views.edit_automation, name='edit_automation'),
     path('delete_automation/<int:automation_id>/', automation_views.delete_automation, name='delete_automation'),
     path('automation_details/<int:automation_id>/', automation_views.automation_details, name='automation_details'), 
+    
+    path('notifications/', notifs_views.notifications, name='notifications_list'),
     
     
 ]
