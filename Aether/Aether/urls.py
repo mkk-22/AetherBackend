@@ -21,8 +21,7 @@ from devices import device_views
 from energy import energy_views
 from ambiance import ambiance_views
 from automation import automation_views
-from notifs import notifs_views
-
+from devicesharing import ds_views
 
 
 urlpatterns = [
@@ -77,8 +76,12 @@ urlpatterns = [
     path('edit_automation/<int:automation_id>/', automation_views.edit_automation, name='edit_automation'),
     path('delete_automation/<int:automation_id>/', automation_views.delete_automation, name='delete_automation'),
     path('automation_details/<int:automation_id>/', automation_views.automation_details, name='automation_details'), 
-    
-    path('notifications/', notifs_views.notifications, name='notifications_list'),
-    
-    
+
+    path('ds_main/', ds_views.ds_main, name='ds_main'),
+    path('add_listing/', ds_views.add_listing, name='add_listing'),
+    path('remove_listing/<int:device_id>/', ds_views.remove_listing, name='remove_listing'),
+    path('approve_request/<int:req_id>/', ds_views.approve_request, name='approve_request'),
+    path('decline_request/<int:req_id>/', ds_views.decline_request, name='decline_request'),
+    path('search_results/', ds_views.search_results, name='search_results'),
+    path('request/<int:listing_id>/', ds_views.create_request, name='create_request'),
 ]

@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'ambiance',
     'automation',
     'virtualenv',
-    'notifs'
+    'notifs',
+    'devicesharing'
 ]
 
 MIDDLEWARE = [

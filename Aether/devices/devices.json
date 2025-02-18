@@ -125,7 +125,7 @@
 
     {
         "name": "Motion Sensor",
-        "options": ["idle", "triggered"],
+        "options": ["idle", "motion"],
         "general_product_code": "MY0002",
         "average_energy_consumption_per_hour": 0.0025,
         "manufacturer": "Aether"
@@ -149,6 +149,45 @@
         "name": "Light Intensity Sensor",
         "general_product_code": "MZ0005",
         "average_energy_consumption_per_hour": 0.0025,
+        "manufacturer": "Aether"
+    },
+
+
+    {
+        "name": "Pest Detector",
+        "options": ["safe", "pest detected!"],
+        "general_product_code": "SY0001",
+        "average_energy_consumption_per_hour": 0.0010,
+        "manufacturer": "Aether"
+    },
+    {
+        "name": "Water Hardness Tester",
+        "general_product_code": "SZ0002",
+        "average_energy_consumption_per_hour": 0.0010,
+        "manufacturer": "Aether"
+    },
+    {
+        "name": "Party Kit",
+        "general_product_code": "ST0003",
+        "average_energy_consumption_per_hour": 2.5,
+        "manufacturer": "Aether"
+    },
+    {
+        "name": "Outdoor Movie Night Set",
+        "general_product_code": "ST0004",
+        "average_energy_consumption_per_hour": 2.5,
+        "manufacturer": "Aether"
+    },
+    {
+        "name": "Stargazer Tools",
+        "general_product_code": "ST0005",
+        "average_energy_consumption_per_hour": 1.2,
+        "manufacturer": "Aether"
+    },
+    {
+        "name": "Home Spa",
+        "general_product_code": "ST0006",
+        "average_energy_consumption_per_hour": 2.1,
         "manufacturer": "Aether"
     }
 ]

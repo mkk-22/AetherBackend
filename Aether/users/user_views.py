@@ -6,6 +6,10 @@ from django.contrib.auth.decorators import login_required
 from .models import Owner, User, Guest
 from devices.models import House, Room, MonitorFixedDevice, MonitorVariableDevice
 from .forms import LoginForm, OwnerSignupForm, GuestLoginForm
+from notifs.models import Notification
+from virtualenv.models import VirtualEnv  
+from django.utils.timezone import now
+
 
 
 def start(request):
@@ -108,17 +112,61 @@ def guest_login(request):
 
 @login_required
 def home(request):
-    # Get latest device states (updated by SimPy)
-    updated_device_states = {
-        device.device_id: device.state
-        for device in MonitorFixedDevice.objects.all()
-    }
-    updated_device_states.update({
-        device.device_id: device.state
-        for device in MonitorVariableDevice.objects.all()
-    })
-    return render(request, 'home.html')
+    user = request.user 
     
+    alert_notifs = []
+    for device in MonitorFixedDevice.objects.filter(device__room__house__owner__user=user):
+        if device.state in ["'motion']", "'leak']"]:  
+            state = device.state[1:-2]
+            message = f"{device.device.name} detects {state}!"
+            alert_notif = Notification.objects.create(user=user, message=message, type='alert', created_at=now(), is_read=False)
+            alert_notifs.append(alert_notif)
+
+    ve_notif = None
+    current_temp = getattr(
+        MonitorVariableDevice.objects.filter(
+            device__room__house__owner__user=user, device__name="Temperature Sensor"
+        ).first(),
+        "state",
+        0,
+    )
+
+    current_humidity = getattr(
+        MonitorVariableDevice.objects.filter(
+            device__room__house__owner__user=user, device__name="Humidity Sensor"
+        ).first(),
+        "state",
+        0,
+    )
+
+    current_light = getattr(
+        MonitorVariableDevice.objects.filter(
+            device__room__house__owner__user=user, device__name="Light Intensity Sensor"
+        ).first(),
+        "state",
+        0,
+    )
+
+    
+    choice =  ' '
+    name = ' '
+    for ve in VirtualEnv.objects.all(): 
+        if ((current_temp >= ve.temperature_condition and current_temp <= ve.temperature_condition + 60) and
+            (current_humidity >= ve.humidity_condition and current_humidity <= ve.humidity_condition + 60) and
+            (current_light >= ve.light_condition and current_light <= ve.light_condition + 60)):
+            
+            ve_notif = Notification.objects.create(user=user, message=ve.name, type='VE', created_at=now(), is_read=False)
+            name = ve.name
+            if name == 'Arctic':
+                choice = 'warm'
+                current_temp = current_temp - 30
+            else:
+                choice = 'cool'
+    
+            break 
+        
+    return render(request, 'home.html', {'temperature':current_temp, 'humidity':current_humidity, 'light_intensity':current_light, 'choice':choice, 'name':name, 'alert_notifs':alert_notifs, 've_notif':ve_notif})
+
 @login_required
 def my_guests(request):
     guests = Guest.objects.filter(owner=request.user.owner).exclude(user__first_name="Guest")
@@ -242,7 +290,6 @@ def account(request):
 
     return render(request, "account.html")
 
-
 @login_required
 def delete_account(request):
     if request.method == "POST":
@@ -252,7 +299,6 @@ def delete_account(request):
         return redirect("start")  
 
     return render(request, "delete_account.html")
-
 
 def contact_support(request):
     if request.method == "POST":
