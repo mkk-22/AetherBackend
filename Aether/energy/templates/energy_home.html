@@ -25,6 +25,15 @@
         {% endif %}
     </section>
 
+    <section>
+        <h2>Energy Projections</h2>
+        <p>Projected usage for the rest of this month: {{ projected_usage_month }} kWh</p>
+        <p>Projected cost for the rest of this month: ${{ projected_cost_month }}</p>
+        
+        <p>Projected usage for the rest of this year: {{ projected_usage_year }} kWh</p>
+        <p>Projected cost for the rest of this year: ${{ projected_cost_year }}</p>            
+    </section>
+
     <!-- Usage Stats -->
     <section>
         <h2>Usage Statistics</h2>

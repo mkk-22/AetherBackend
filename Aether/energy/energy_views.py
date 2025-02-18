@@ -8,26 +8,61 @@ from .forms import EnergyGoalForm
 from django.utils.timezone import now
 from django.db.models import F
 from django.db.models import Sum
+from datetime import datetime, timedelta
+
+from decimal import Decimal
+
+from decimal import Decimal, ROUND_DOWN
+
+from decimal import Decimal, ROUND_DOWN
+from datetime import timedelta
+
+from decimal import Decimal, ROUND_DOWN
 from datetime import timedelta
 
 @login_required
 def energy_home(request):
     goal = EnergyGoal.objects.filter(homeowner=request.user.owner).first()
 
-    # Get daily usage for today
     daily_usage = UserEnergyUsage.objects.filter(homeowner=request.user.owner, creation_timestamp__date=now().date()).aggregate(total=Sum('total_consumption'))
     daily_progress = daily_usage['total'] if daily_usage['total'] else 0
 
-    # Fetch community events
     events = CommunityEvent.objects.all()
+    
+    start_of_month = now().replace(day=1)
+    total_usage_month_so_far = UserEnergyUsage.objects.filter(homeowner=request.user.owner, creation_timestamp__gte=start_of_month).aggregate(total=Sum('total_consumption'))['total'] or 0
 
-    context = {
-        'goal': goal,
-        'daily_progress': daily_progress,
-        'events': events,
-    }
+    start_of_year = now().replace(month=1, day=1)
+    total_usage_year_so_far = UserEnergyUsage.objects.filter(homeowner=request.user.owner, creation_timestamp__gte=start_of_year).aggregate(total=Sum('total_consumption'))['total'] or 0
 
-    return render(request, 'energy_home.html', context)
+    days_in_month = (start_of_month.replace(month=now().month % 12 + 1) - start_of_month).days
+    days_so_far = (now().date() - start_of_month.date()).days
+    months_in_year = 12
+    months_so_far = (now().month - 1)
+
+    if days_so_far > 0:
+        projected_usage_month = (total_usage_month_so_far / days_so_far) * days_in_month
+    else:
+        projected_usage_month = 0
+
+    if months_so_far > 0:
+        projected_usage_year = (total_usage_year_so_far / months_so_far) * months_in_year
+    else:
+        projected_usage_year = 0
+
+    cost_per_kwh = 0.20
+    cost_per_kwh = Decimal(cost_per_kwh)
+
+    projected_cost_month = projected_usage_month * cost_per_kwh
+    projected_cost_year = projected_usage_year * cost_per_kwh
+
+    projected_cost_month = projected_cost_month.quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+    projected_cost_year = projected_cost_year.quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+    projected_usage_month = projected_usage_month.quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+    projected_usage_year = projected_usage_year.quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+
+    return render(request, 'energy_home.html',{'goal': goal, 'daily_progress': daily_progress, 'events': events, 'projected_usage_month': projected_usage_month, 'projected_usage_year': projected_usage_year, 'projected_cost_month': projected_cost_month, 'projected_cost_year': projected_cost_year})
+
 
 @login_required
 def set_goal(request):
