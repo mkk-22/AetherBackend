@@ -1,8 +1,11 @@
+import json
 from pyexpat.errors import messages
 import random
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from .models import Owner, User, Guest
 from devices.models import House, Room, MonitorFixedDevice, MonitorVariableDevice
 from .forms import LoginForm, OwnerSignupForm, GuestLoginForm
