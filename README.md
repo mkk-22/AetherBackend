@@ -5,9 +5,13 @@ Description of the structure:
 2. Apps (so far): 
     - users: login, signup, guest login, logout
     - devices: add/remove rooms/ add/remove devices in rooms, toggle devices, create interval reading records
-    - energy: set/remove a daily energy consumption goal, view stats (TO DO), predict usage (TO DO), view and join/leave community events
+    - energy: set/remove a daily energy consumption goal, view stats, project bill, usage, view and join/leave community events
     - ambience: view ambience mode of a room, add/edit/remove modes
-    - automation: view automations, add/edit/remove automations 
+    - automation: view automations, add/edit/remove automations
+    - devicesharing: device sharing platform, search for available device, add listing, request device, approve/decline pending requests
+    - virtualenv: virtual environment detection and toggle suggetsion functionality
+    - notifs: detect urgent changes, alert user
+    - simulation: change state of devices randomly to simulate real-life 
 
 
 How to host locally:
